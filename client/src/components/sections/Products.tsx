@@ -1,29 +1,50 @@
 import { Link } from "wouter";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
+import apatitImg from "@/assets/images/product-quang-apatit-tuyen.png";
+import kaolinImg from "@/assets/images/product-kaolin.png";
+import npkImg from "@/assets/images/product-npk.png";
+import phosphateImg1 from "@/assets/images/product-phosphate1.png";
+import phosphateImg2 from "@/assets/images/product-phosphate2.png";
+import phuGiaImg from "@/assets/images/product-phu-gia.png";
+import fenspatImg from "@/assets/images/product-fenspat.png";
 export default function Products() {
   const products = [
     {
+      name: "Đá phosphate loại 1",
+      category: "Khoáng sản",
+      img: phosphateImg1,
+    },
+    {
+      name: "Đá phosphate loại 2",
+      category: "Khoáng sản",
+      img: phosphateImg2,
+    },
+    {
       name: "Phân Bón NPK",
       category: "Phân bón",
-      img: "https://images.unsplash.com/photo-1592982537447-6f2f2c8d2346?q=80&w=600&auto=format&fit=crop"
+      img: npkImg,
+    },
+    {
+      name: "Phụ gia các loại",
+      category: "Hóa chất",
+      img: phuGiaImg,
     },
     {
       name: "Quặng Apatit tuyển",
       category: "Khoáng sản",
-      img: "https://images.unsplash.com/photo-1621689254070-5883a45fb22d?q=80&w=600&auto=format&fit=crop"
+      img: apatitImg,
     },
     {
-      name: "Đá phosphate loại 1",
+      name: "Quặng Fenspát",
       category: "Khoáng sản",
-      img: "https://images.unsplash.com/photo-1525087740718-9e0f2c58c7ef?q=80&w=600&auto=format&fit=crop"
+      img: fenspatImg,
     },
     {
       name: "Quặng Kaolin",
       category: "Khoáng sản",
-      img: "https://images.unsplash.com/photo-1516027101569-82ce3855ffdc?q=80&w=600&auto=format&fit=crop"
-    }
+      img: kaolinImg,
+    },
   ];
 
   return (

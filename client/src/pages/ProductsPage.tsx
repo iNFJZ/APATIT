@@ -3,15 +3,23 @@ import Footer from "@/components/layout/Footer";
 import { ArrowRight, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import phosphateImg1 from "@/assets/images/product-phosphate1.png";
+import phosphateImg2 from "@/assets/images/product-phosphate2.png";
+import npkImg from "@/assets/images/product-npk.png";
+import phuGiaImg from "@/assets/images/product-phu-gia.png";
+import apatitImg from "@/assets/images/product-quang-apatit-tuyen.png";
+import fenspatImg from "@/assets/images/product-fenspat.png";
+import kaolinImg from "@/assets/images/product-kaolin.png";
 
 export default function ProductsPage() {
   const products = [
-    { name: "Phân Bón NPK", category: "Phân bón", price: "Liên hệ", img: "https://images.unsplash.com/photo-1592982537447-6f2f2c8d2346?q=80&w=600&auto=format&fit=crop" },
-    { name: "Quặng Apatit tuyển", category: "Khoáng sản", price: "Liên hệ", img: "https://images.unsplash.com/photo-1621689254070-5883a45fb22d?q=80&w=600&auto=format&fit=crop" },
-    { name: "Đá phosphate loại 1", category: "Khoáng sản", price: "Liên hệ", img: "https://images.unsplash.com/photo-1525087740718-9e0f2c58c7ef?q=80&w=600&auto=format&fit=crop" },
-    { name: "Quặng Kaolin", category: "Khoáng sản", price: "Liên hệ", img: "https://images.unsplash.com/photo-1516027101569-82ce3855ffdc?q=80&w=600&auto=format&fit=crop" },
-    { name: "Phụ gia các loại", category: "Hóa chất", price: "Liên hệ", img: "https://images.unsplash.com/photo-1532187863486-abf9d3c45bb6?q=80&w=600&auto=format&fit=crop" },
-    { name: "Quặng Fenspát", category: "Khoáng sản", price: "Liên hệ", img: "https://images.unsplash.com/photo-1515543582370-4cff31e54e8b?q=80&w=600&auto=format&fit=crop" },
+    { name: "Đá phosphate loại 1", category: "Khoáng sản", price: "Liên hệ", img: phosphateImg1 },
+    { name: "Đá phosphate loại 2", category: "Khoáng sản", price: "Liên hệ", img: phosphateImg2 },
+    { name: "Phân Bón NPK", category: "Phân bón", price: "Liên hệ", img: npkImg },
+    { name: "Phụ gia các loại", category: "Hóa chất", price: "Liên hệ", img: phuGiaImg },
+    { name: "Quặng Apatit tuyển", category: "Khoáng sản", price: "Liên hệ", img: apatitImg },
+    { name: "Quặng Fenspát", category: "Khoáng sản", price: "Liên hệ", img: fenspatImg },
+    { name: "Quặng Kaolin", category: "Khoáng sản", price: "Liên hệ", img: kaolinImg },
   ];
 
   return (
@@ -37,7 +45,11 @@ export default function ProductsPage() {
               {products.map((p, i) => (
                 <div key={i} className="group border rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300">
                   <div className="aspect-square overflow-hidden relative">
-                    <img src={p.img} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    <img
+                      src={p.img}
+                      alt={p.name}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
                     <div className="absolute top-4 left-4">
                       <span className="bg-white/90 backdrop-blur-sm text-primary text-xs font-bold px-3 py-1 rounded-full shadow-sm">{p.category}</span>
                     </div>
