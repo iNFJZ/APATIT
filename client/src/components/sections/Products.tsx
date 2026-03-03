@@ -42,10 +42,12 @@ export default function Products() {
             </p>
           </div>
           
-          <Button variant="outline" className="rounded-full text-white border-white/20 hover:bg-white/10 shrink-0">
-            Xem tất cả sản phẩm
-            <ArrowRight className="ml-2 w-4 h-4" />
-          </Button>
+          <Link href="/san-pham">
+            <Button variant="outline" className="rounded-full text-white border-white/20 hover:bg-white/10 shrink-0">
+              Xem tất cả sản phẩm
+              <ArrowRight className="ml-2 w-4 h-4" />
+            </Button>
+          </Link>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">

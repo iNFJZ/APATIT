@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
-import { Link } from "wouter";
-import { Menu, X, Search, Phone, Mail } from "lucide-react";
+import { Link, useLocation } from "wouter";
+import { Menu, X, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [location] = useLocation();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -15,19 +16,19 @@ export default function Header() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  const isHomePage = location === "/";
+
   const navLinks = [
     { name: "Trang chủ", href: "/" },
-    { name: "Giới thiệu", href: "#about" },
-    { name: "Sản phẩm", href: "#products" },
-    { name: "Dịch vụ", href: "#services" },
-    { name: "Tin tức", href: "#news" },
-    { name: "Liên hệ", href: "#contact" },
+    { name: "Giới thiệu", href: "/gioi-thieu" },
+    { name: "Sản phẩm", href: "/san-pham" },
+    { name: "Liên hệ", href: "/lien-he" },
   ];
 
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled
+        isScrolled || !isHomePage
           ? "bg-white/90 backdrop-blur-md shadow-sm py-3"
           : "bg-transparent py-5"
       }`}
@@ -36,21 +37,20 @@ export default function Header() {
         <div className="flex items-center justify-between">
           <Link href="/">
             <div className="flex items-center gap-3 cursor-pointer">
-              {/* Placeholder for Logo */}
               <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold text-xl">
                 A
               </div>
               <div className="flex flex-col">
                 <span
                   className={`font-heading font-bold text-lg leading-tight ${
-                    isScrolled ? "text-secondary" : "text-white drop-shadow-md"
+                    isScrolled || !isHomePage ? "text-secondary" : "text-white drop-shadow-md"
                   }`}
                 >
                   APATIT VIỆT NAM
                 </span>
                 <span
                   className={`text-xs font-medium ${
-                    isScrolled ? "text-primary" : "text-white/90 drop-shadow-md"
+                    isScrolled || !isHomePage ? "text-primary" : "text-white/90 drop-shadow-md"
                   }`}
                 >
                   VINAAPACO
@@ -59,19 +59,21 @@ export default function Header() {
             </div>
           </Link>
 
-          {/* Desktop Nav */}
           <nav className="hidden lg:flex items-center gap-8">
             <ul className="flex items-center gap-6">
               {navLinks.map((link) => (
                 <li key={link.name}>
-                  <a
-                    href={link.href}
-                    className={`font-medium text-sm transition-colors hover:text-primary ${
-                      isScrolled ? "text-secondary/80" : "text-white/90 drop-shadow-md"
-                    }`}
-                  >
-                    {link.name}
-                  </a>
+                  <Link href={link.href}>
+                    <a
+                      className={`font-medium text-sm transition-colors hover:text-primary ${
+                        location === link.href 
+                          ? "text-primary" 
+                          : (isScrolled || !isHomePage ? "text-secondary/80" : "text-white/90 drop-shadow-md")
+                      }`}
+                    >
+                      {link.name}
+                    </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -80,7 +82,7 @@ export default function Header() {
                 variant="ghost"
                 size="icon"
                 className={`rounded-full ${
-                  isScrolled ? "text-secondary" : "text-white hover:text-white hover:bg-white/20"
+                  isScrolled || !isHomePage ? "text-secondary" : "text-white hover:text-white hover:bg-white/20"
                 }`}
               >
                 <Search className="w-4 h-4" />
@@ -91,10 +93,9 @@ export default function Header() {
             </div>
           </nav>
 
-          {/* Mobile Menu Toggle */}
           <button
             className={`lg:hidden p-2 rounded-md ${
-              isScrolled ? "text-secondary" : "text-white"
+              isScrolled || !isHomePage ? "text-secondary" : "text-white"
             }`}
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
@@ -103,19 +104,21 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Mobile Nav */}
       {mobileMenuOpen && (
         <div className="lg:hidden absolute top-full left-0 right-0 bg-white shadow-xl border-t border-gray-100 py-4 px-4 flex flex-col gap-4 animate-in slide-in-from-top-2">
           <ul className="flex flex-col gap-2">
             {navLinks.map((link) => (
               <li key={link.name}>
-                <a
-                  href={link.href}
-                  className="block py-2 text-secondary font-medium hover:text-primary transition-colors"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  {link.name}
-                </a>
+                <Link href={link.href}>
+                  <a
+                    className={`block py-2 font-medium hover:text-primary transition-colors ${
+                      location === link.href ? "text-primary" : "text-secondary"
+                    }`}
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    {link.name}
+                  </a>
+                </Link>
               </li>
             ))}
           </ul>

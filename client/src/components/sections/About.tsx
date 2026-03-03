@@ -74,9 +74,11 @@ export default function About() {
               </div>
             </div>
 
-            <Button size="lg" className="rounded-full px-8">
-              Lịch sử phát triển
-            </Button>
+            <Link href="/gioi-thieu">
+              <Button size="lg" className="rounded-full px-8">
+                Lịch sử phát triển
+              </Button>
+            </Link>
           </div>
           
         </div>

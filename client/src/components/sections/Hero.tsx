@@ -36,13 +36,17 @@ export default function Hero() {
           </p>
           
           <div className="flex flex-wrap items-center gap-4 animate-in slide-in-from-bottom-10 duration-700 delay-300">
-            <Button size="lg" className="rounded-full text-base h-12 px-8 shadow-lg shadow-primary/20 group">
-              Khám phá Sản phẩm
-              <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </Button>
-            <Button size="lg" variant="outline" className="rounded-full text-base h-12 px-8 bg-white/5 border-white/20 text-white hover:bg-white/10 hover:text-white backdrop-blur-sm">
-              Tìm hiểu thêm
-            </Button>
+            <Link href="/san-pham">
+              <Button size="lg" className="rounded-full text-base h-12 px-8 shadow-lg shadow-primary/20 group">
+                Khám phá Sản phẩm
+                <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </Link>
+            <Link href="/gioi-thieu">
+              <Button size="lg" variant="outline" className="rounded-full text-base h-12 px-8 bg-white/5 border-white/20 text-white hover:bg-white/10 hover:text-white backdrop-blur-sm">
+                Tìm hiểu thêm
+              </Button>
+            </Link>
           </div>
         </div>
       </div>

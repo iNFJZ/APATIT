@@ -62,19 +62,23 @@ export default function Footer() {
             </h3>
             <ul className="space-y-3 text-sm">
               <li>
-                <a href="#" className="hover:text-primary transition-colors flex items-center gap-2 before:content-['›'] before:text-primary">
-                  Giới thiệu công ty
-                </a>
+                <Link href="/gioi-thieu">
+                  <a className="hover:text-primary transition-colors flex items-center gap-2 before:content-['›'] before:text-primary">
+                    Giới thiệu công ty
+                  </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="hover:text-primary transition-colors flex items-center gap-2 before:content-['›'] before:text-primary">
+                <a href="/#services" className="hover:text-primary transition-colors flex items-center gap-2 before:content-['›'] before:text-primary">
                   Lĩnh vực hoạt động
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-primary transition-colors flex items-center gap-2 before:content-['›'] before:text-primary">
-                  Sản phẩm & Dịch vụ
-                </a>
+                <Link href="/san-pham">
+                  <a className="hover:text-primary transition-colors flex items-center gap-2 before:content-['›'] before:text-primary">
+                    Sản phẩm & Dịch vụ
+                  </a>
+                </Link>
               </li>
               <li>
                 <a href="#" className="hover:text-primary transition-colors flex items-center gap-2 before:content-['›'] before:text-primary">
