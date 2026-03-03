@@ -37,8 +37,12 @@ export default function Header() {
         <div className="flex items-center justify-between">
           <Link href="/">
             <div className="flex items-center gap-3 cursor-pointer">
-              <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold text-xl">
-                A
+              <div className="w-10 h-10 rounded-full overflow-hidden bg-white shadow flex items-center justify-center">
+                <img
+                  src="/image-ec7d5f4a-e673-4515-abdc-fa062a491c7a.png"
+                  alt="VINAAPACO logo"
+                  className="w-full h-full object-cover"
+                />
               </div>
               <div className="flex flex-col">
                 <span
