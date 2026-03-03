@@ -1,4 +1,5 @@
 import aboutImg from "@/assets/images/about.jpg";
+import { Link } from "wouter";
 import { CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
