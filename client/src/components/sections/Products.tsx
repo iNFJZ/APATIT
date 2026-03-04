@@ -1,9 +1,22 @@
 import { Link } from "wouter";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { products } from "@/data/products";
+import { useQuery } from "@tanstack/react-query";
+import { getQueryFn } from "@/lib/queryClient";
+
+type HomeProduct = {
+  slug: string;
+  name: string;
+  category: string;
+  imageUrl: string | null;
+};
 export default function Products() {
-  const featuredProducts = products.slice(0, 4);
+  const { data, isLoading, isError } = useQuery<{ products: HomeProduct[] }>({
+    queryKey: ["/api/products?limit=4&offset=0"],
+    queryFn: getQueryFn({ on401: "throw" }),
+  });
+
+  const featuredProducts = data?.products ?? [];
 
   return (
     <section id="products" className="py-20 md:py-32 bg-secondary text-white relative">
@@ -30,14 +43,19 @@ export default function Products() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {featuredProducts.map((product) => (
+        {isLoading ? (
+          <p className="text-white/70">Đang tải sản phẩm...</p>
+        ) : isError ? (
+          <p className="text-red-200">Không thể tải sản phẩm.</p>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {featuredProducts.map((product) => (
             <div key={product.slug} className="group cursor-pointer">
               <Link href={`/san-pham/${product.slug}`}>
                 <a>
                   <div className="relative h-[300px] md:h-[400px] rounded-2xl overflow-hidden mb-6">
                     <img
-                      src={product.img}
+                      src={product.imageUrl ?? ""}
                       alt={product.name}
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                     />
@@ -56,8 +74,9 @@ export default function Products() {
                 </a>
               </Link>
             </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

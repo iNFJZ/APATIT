@@ -2,6 +2,21 @@ import type { Express } from "express";
 import { type Server } from "http";
 import { storage } from "./storage";
 import { z } from "zod";
+import bcrypt from "bcryptjs";
+import {
+  createPost,
+  deletePostById,
+  getPostBySlug,
+  listPosts,
+  updatePostById,
+} from "./posts-repository";
+import {
+  createProduct,
+  deleteProductById,
+  getProductBySlug,
+  listProducts,
+  updateProductById,
+} from "./products-repository";
 
 declare module "express-session" {
   interface SessionData {
@@ -97,7 +112,14 @@ export async function registerRoutes(
 
   const existingStaffUser = await storage.getUserByUsername(staffUsername);
   if (!existingStaffUser && process.env.NODE_ENV !== "production") {
-    await storage.createUser({ username: staffUsername, password: staffPassword });
+    const passwordHash = await bcrypt.hash(staffPassword, 10);
+    await storage.createUser({ username: staffUsername, password: passwordHash });
+  } else if (existingStaffUser && process.env.NODE_ENV !== "production") {
+    const isBcryptHash = existingStaffUser.password.startsWith("$2");
+    if (!isBcryptHash) {
+      const passwordHash = await bcrypt.hash(staffPassword, 10);
+      await storage.updateUserPasswordById(existingStaffUser.id, passwordHash);
+    }
   }
 
   const loginSchema = z.object({
@@ -124,7 +146,11 @@ export async function registerRoutes(
     }
     const { username, password } = parsed.data;
     const user = await storage.getUserByUsername(username);
-    if (!user || user.password !== password) {
+    if (!user) {
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
     req.session.userId = user.id;
@@ -158,6 +184,135 @@ export async function registerRoutes(
         return res.status(404).json({ message: "Employee not found" });
       }
       return res.json({ employee });
+    } catch (err) {
+      return next(err);
+    }
+  });
+
+  app.get("/api/posts", async (req, res, next) => {
+    try {
+      const { type, search, limit, offset, onlyPublished } = req.query;
+      const posts = await listPosts({
+        type: typeof type === "string" ? type : undefined,
+        search: typeof search === "string" ? search : undefined,
+        limit,
+        offset,
+        onlyPublished: onlyPublished !== "false",
+      } as any);
+      return res.json({ posts });
+    } catch (err) {
+      return next(err);
+    }
+  });
+
+  app.get("/api/posts/:slug", async (req, res, next) => {
+    try {
+      const onlyPublished = req.query.onlyPublished !== "false";
+      const post = await getPostBySlug(req.params.slug, onlyPublished);
+      if (!post) {
+        return res.status(404).json({ message: "Post not found" });
+      }
+      return res.json({ post });
+    } catch (err) {
+      return next(err);
+    }
+  });
+
+  app.post("/api/posts", async (req, res, next) => {
+    try {
+      assertAuthenticated(req.session.userId);
+      const created = await createPost(req.body);
+      return res.status(201).json({ post: created });
+    } catch (err) {
+      return next(err);
+    }
+  });
+
+  app.patch("/api/posts/:id", async (req, res, next) => {
+    try {
+      assertAuthenticated(req.session.userId);
+      const updated = await updatePostById(req.params.id, req.body);
+      if (!updated) {
+        return res.status(404).json({ message: "Post not found" });
+      }
+      return res.json({ post: updated });
+    } catch (err) {
+      return next(err);
+    }
+  });
+
+  app.delete("/api/posts/:id", async (req, res, next) => {
+    try {
+      assertAuthenticated(req.session.userId);
+      const deleted = await deletePostById(req.params.id);
+      if (!deleted) {
+        return res.status(404).json({ message: "Post not found" });
+      }
+      return res.json({ ok: true });
+    } catch (err) {
+      return next(err);
+    }
+  });
+
+  app.get("/api/products", async (req, res, next) => {
+    try {
+      const { search, limit, offset, onlyPublished } = req.query;
+      const products = await listProducts({
+        search: typeof search === "string" ? search : undefined,
+        limit,
+        offset,
+        onlyPublished: onlyPublished !== "false",
+      } as any);
+      return res.json({ products });
+    } catch (err) {
+      return next(err);
+    }
+  });
+
+  app.get("/api/products/:slug", async (req, res, next) => {
+    try {
+      const onlyPublished = req.query.onlyPublished !== "false";
+      const product = await getProductBySlug(req.params.slug, onlyPublished);
+      if (!product) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+      return res.json({ product });
+    } catch (err) {
+      return next(err);
+    }
+  });
+
+  app.post("/api/products", async (req, res, next) => {
+    try {
+      assertAuthenticated(req.session.userId);
+      const created = await createProduct(req.body);
+      return res.status(201).json({ product: created });
+    } catch (err) {
+      return next(err);
+    }
+  });
+
+  app.patch("/api/products/:id", async (req, res, next) => {
+    try {
+      assertAuthenticated(req.session.userId);
+      const updated = await updateProductById(req.params.id, req.body);
+      if (!updated) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+      return res.json({ product: updated });
+    } catch (err) {
+      return next(err);
+    }
+  });
+
+  app.delete("/api/products/:id", async (req, res, next) => {
+    try {
+      assertAuthenticated(req.session.userId);
+      const deleted = await deleteProductById(req.params.id);
+      if (!deleted) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+      return res.json({ ok: true });
     } catch (err) {
       return next(err);
     }

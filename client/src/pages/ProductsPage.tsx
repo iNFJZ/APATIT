@@ -5,10 +5,32 @@ import { ArrowRight, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Link } from "wouter";
-import { products } from "@/data/products";
+import { useQuery } from "@tanstack/react-query";
+import { getQueryFn } from "@/lib/queryClient";
+
+type ProductListItem = {
+  id: string;
+  slug: string;
+  name: string;
+  category: string;
+  priceLabel: string;
+  imageUrl: string | null;
+  shortDescription: string;
+  description: string;
+  publishedAt: string;
+};
 
 export default function ProductsPage() {
   const [searchTerm, setSearchTerm] = useState<string>("");
+
+  const { data, isLoading, isError } = useQuery<{
+    products: ProductListItem[];
+  }>({
+    queryKey: ["/api/products"],
+    queryFn: getQueryFn({ on401: "throw" }),
+  });
+
+  const products = data?.products ?? [];
 
   const filteredProducts = useMemo(
     () =>
@@ -20,10 +42,11 @@ export default function ProductsPage() {
         return (
           product.name.toLowerCase().includes(keyword) ||
           product.category.toLowerCase().includes(keyword) ||
-          product.shortDescription.toLowerCase().includes(keyword)
+          product.shortDescription.toLowerCase().includes(keyword) ||
+          product.description.toLowerCase().includes(keyword)
         );
       }),
-    [searchTerm],
+    [searchTerm, products],
   );
 
   return (
@@ -66,7 +89,11 @@ export default function ProductsPage() {
 
         <section className="py-16">
           <div className="container mx-auto px-4">
-            {filteredProducts.length === 0 ? (
+            {isLoading ? (
+              <p className="text-muted-foreground">Đang tải danh mục sản phẩm...</p>
+            ) : isError ? (
+              <p className="text-red-500">Không thể tải danh mục sản phẩm. Vui lòng thử lại sau.</p>
+            ) : filteredProducts.length === 0 ? (
               <p className="text-muted-foreground">
                 Không tìm thấy sản phẩm phù hợp với từ khóa "
                 <span className="font-semibold">{searchTerm}</span>".
@@ -93,7 +120,7 @@ export default function ProductsPage() {
                     <a className="block h-full">
                       <div className="aspect-square overflow-hidden relative">
                         <img
-                          src={product.img}
+                          src={product.imageUrl ?? ""}
                           alt={product.name}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                         />
@@ -107,7 +134,7 @@ export default function ProductsPage() {
                         <h3 className="font-heading font-bold text-lg text-secondary mb-2">
                           {product.name}
                         </h3>
-                        <div className="text-primary font-bold mb-4">{product.price}</div>
+                        <div className="text-primary font-bold mb-4">{product.priceLabel}</div>
                         <Button
                           variant="outline"
                           className="w-full rounded-full group-hover:bg-primary group-hover:text-white transition-colors"

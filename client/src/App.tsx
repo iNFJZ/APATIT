@@ -12,6 +12,8 @@ import ProductsPage from "@/pages/ProductsPage";
 import ProductDetailPage from "@/pages/ProductDetailPage";
 import NewsPage from "@/pages/NewsPage";
 import NewsDetailPage from "@/pages/NewsDetailPage";
+import AnnouncementsPage from "@/pages/AnnouncementsPage";
+import AnnouncementDetailPage from "@/pages/AnnouncementDetailPage";
 import ContactPage from "@/pages/ContactPage";
 import LoginPage from "@/pages/LoginPage";
 import EmployeesPage from "@/pages/EmployeesPage";
@@ -26,6 +28,8 @@ function Router() {
       <Route path="/san-pham" component={ProductsPage} />
       <Route path="/tin-tuc/:slug" component={NewsDetailPage} />
       <Route path="/tin-tuc" component={NewsPage} />
+      <Route path="/cong-bo-thong-tin/:slug" component={AnnouncementDetailPage} />
+      <Route path="/cong-bo-thong-tin" component={AnnouncementsPage} />
       <Route path="/lien-he" component={ContactPage} />
       <Route path="/dang-nhap" component={LoginPage} />
       <Route path="/nhan-vien/:id" component={EmployeeDetailPage} />

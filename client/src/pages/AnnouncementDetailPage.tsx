@@ -7,7 +7,7 @@ import { Link, useRoute } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { getQueryFn } from "@/lib/queryClient";
 
-type NewsPostDetail = {
+type AnnouncementPostDetail = {
   id: string;
   slug: string;
   title: string;
@@ -17,12 +17,12 @@ type NewsPostDetail = {
   publishedAt: string;
 };
 
-export default function NewsDetailPage() {
-  const [match, params] = useRoute<{ slug: string }>("/tin-tuc/:slug");
+export default function AnnouncementDetailPage() {
+  const [match, params] = useRoute<{ slug: string }>("/cong-bo-thong-tin/:slug");
   const slug = params?.slug ?? "";
 
   const { data, isLoading, isError } = useQuery<{
-    post: NewsPostDetail;
+    post: AnnouncementPostDetail;
   }>({
     queryKey: ["/api/posts", slug],
     queryFn: getQueryFn({ on401: "throw" }),
@@ -31,7 +31,7 @@ export default function NewsDetailPage() {
 
   const item = data?.post;
 
-  if (!match || (!item && !isLoading && !isError)) {
+  if (!match) {
     return (
       <div className="min-h-screen bg-background">
         <Header />
@@ -40,15 +40,15 @@ export default function NewsDetailPage() {
             <div className="container mx-auto px-4">
               <div className="max-w-xl text-center mx-auto">
                 <h1 className="text-2xl md:text-3xl font-heading font-bold text-secondary mb-4">
-                  Không tìm thấy tin tức
+                  Không tìm thấy nội dung
                 </h1>
                 <p className="text-muted-foreground mb-8">
-                  Bài viết bạn đang tìm không tồn tại hoặc đã được cập nhật. Vui lòng quay lại danh sách tin tức.
+                  Trang bạn đang tìm không tồn tại hoặc đã được cập nhật.
                 </p>
-                <Link href="/tin-tuc">
+                <Link href="/cong-bo-thong-tin">
                   <Button className="rounded-full">
                     <ArrowLeft className="w-4 h-4 mr-2" />
-                    Quay lại danh sách tin tức
+                    Quay lại danh sách công bố
                   </Button>
                 </Link>
               </div>
@@ -67,7 +67,7 @@ export default function NewsDetailPage() {
         <main className="pt-24">
           <section className="py-16">
             <div className="container mx-auto px-4">
-              <p className="text-muted-foreground">Đang tải nội dung bài viết...</p>
+              <p className="text-muted-foreground">Đang tải nội dung...</p>
             </div>
           </section>
         </main>
@@ -85,15 +85,15 @@ export default function NewsDetailPage() {
             <div className="container mx-auto px-4">
               <div className="max-w-xl text-center mx-auto">
                 <h1 className="text-2xl md:text-3xl font-heading font-bold text-secondary mb-4">
-                  Không thể tải bài viết
+                  Không thể tải nội dung
                 </h1>
                 <p className="text-muted-foreground mb-8">
-                  Đã xảy ra lỗi khi tải dữ liệu. Vui lòng thử lại sau hoặc quay lại danh sách tin tức.
+                  Đã xảy ra lỗi khi tải dữ liệu. Vui lòng thử lại sau.
                 </p>
-                <Link href="/tin-tuc">
+                <Link href="/cong-bo-thong-tin">
                   <Button className="rounded-full">
                     <ArrowLeft className="w-4 h-4 mr-2" />
-                    Quay lại danh sách tin tức
+                    Quay lại danh sách công bố
                   </Button>
                 </Link>
               </div>
@@ -114,7 +114,7 @@ export default function NewsDetailPage() {
             <div>
               <div className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground mb-3">
                 <CalendarDays className="w-4 h-4 text-primary" />
-                  {new Date(item.publishedAt).toLocaleDateString("vi-VN")}
+                {new Date(item.publishedAt).toLocaleDateString("vi-VN")}
               </div>
               <h1 className="text-3xl md:text-4xl font-heading font-bold text-secondary mb-2">
                 {item.title}
@@ -122,10 +122,10 @@ export default function NewsDetailPage() {
               <p className="text-muted-foreground max-w-3xl">{item.summary}</p>
             </div>
             <div className="flex gap-3 mt-4 md:mt-0">
-              <Link href="/tin-tuc">
+              <Link href="/cong-bo-thong-tin">
                 <Button variant="outline" className="rounded-full">
                   <ArrowLeft className="w-4 h-4 mr-2" />
-                  Danh sách tin tức
+                  Danh sách công bố
                 </Button>
               </Link>
             </div>
@@ -139,9 +139,7 @@ export default function NewsDetailPage() {
                 <img src={item.imageUrl ?? ""} alt={item.title} className="w-full h-full object-cover" />
               </div>
               <article className="prose prose-slate max-w-none">
-                <p className="whitespace-pre-line text-muted-foreground leading-relaxed">
-                  {item.content}
-                </p>
+                <p className="whitespace-pre-line text-muted-foreground leading-relaxed">{item.content}</p>
               </article>
             </div>
           </div>

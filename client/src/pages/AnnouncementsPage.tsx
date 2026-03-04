@@ -8,7 +8,7 @@ import React, { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getQueryFn } from "@/lib/queryClient";
 
-type NewsPost = {
+type AnnouncementPost = {
   id: string;
   slug: string;
   title: string;
@@ -18,19 +18,19 @@ type NewsPost = {
   publishedAt: string;
 };
 
-export default function NewsPage() {
+export default function AnnouncementsPage() {
   const [searchTerm, setSearchTerm] = useState<string>("");
 
   const { data, isLoading, isError } = useQuery<{
-    posts: NewsPost[];
+    posts: AnnouncementPost[];
   }>({
-    queryKey: ["/api/posts?type=NEWS"],
+    queryKey: ["/api/posts?type=ANNOUNCEMENT"],
     queryFn: getQueryFn({ on401: "throw" }),
   });
 
   const posts = data?.posts ?? [];
 
-  const filteredNews = useMemo(() => {
+  const filteredPosts = useMemo(() => {
     if (!searchTerm.trim()) {
       return posts;
     }
@@ -51,14 +51,14 @@ export default function NewsPage() {
         <section className="py-16 bg-slate-50 border-b">
           <div className="container mx-auto px-4">
             <h1 className="text-3xl md:text-4xl font-heading font-bold text-secondary mb-6">
-              Danh sách tin tức
+              Công bố thông tin
             </h1>
             <div className="flex flex-col md:flex-row gap-4 max-w-2xl">
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
                   className="pl-10 rounded-full"
-                  placeholder="Tìm kiếm tin tức..."
+                  placeholder="Tìm kiếm công bố..."
                   value={searchTerm}
                   onChange={(event) => setSearchTerm(event.target.value)}
                   onKeyDown={(event) => {
@@ -87,61 +87,56 @@ export default function NewsPage() {
         <section className="py-16">
           <div className="container mx-auto px-4">
             {isLoading ? (
-              <p className="text-muted-foreground">Đang tải danh sách tin tức...</p>
+              <p className="text-muted-foreground">Đang tải danh sách công bố...</p>
             ) : isError ? (
-              <p className="text-red-500">Không thể tải danh sách tin tức. Vui lòng thử lại sau.</p>
-            ) : filteredNews.length === 0 ? (
+              <p className="text-red-500">Không thể tải danh sách công bố. Vui lòng thử lại sau.</p>
+            ) : filteredPosts.length === 0 ? (
               <p className="text-muted-foreground">
-                Không tìm thấy tin tức phù hợp với từ khóa "
+                Không tìm thấy công bố phù hợp với từ khóa "
                 <span className="font-semibold">{searchTerm}</span>".
-                </p>
-              ) : (
+              </p>
+            ) : (
               <>
                 <p className="text-sm text-muted-foreground mb-4">
                   Tìm thấy{" "}
-                  <span className="font-semibold text-secondary">
-                    {filteredNews.length}
-                  </span>{" "}
-                  bài viết
-                  {searchTerm.trim()
-                    ? " phù hợp với tiêu chí tìm kiếm."
-                    : " trong danh sách hiện tại."}
+                  <span className="font-semibold text-secondary">{filteredPosts.length}</span> thông báo
+                  {searchTerm.trim() ? " phù hợp với tiêu chí tìm kiếm." : " trong danh sách hiện tại."}
                 </p>
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {filteredNews.map((item) => (
-                  <div
-                    key={item.slug}
-                    className="group border rounded-2xl overflow-hidden bg-white hover:shadow-xl transition-all duration-300"
-                  >
-                    <Link href={`/tin-tuc/${item.slug}`}>
-                      <a className="block h-full">
-                        <div className="aspect-[16/9] overflow-hidden relative">
-                          <img
-                            src={item.imageUrl ?? ""}
-                            alt={item.title}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                          />
-                          <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-md flex items-center gap-2 text-sm font-medium text-secondary shadow-sm">
-                            <CalendarDays className="w-4 h-4 text-primary" />
-                            {new Date(item.publishedAt).toLocaleDateString("vi-VN")}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                  {filteredPosts.map((item) => (
+                    <div
+                      key={item.slug}
+                      className="group border rounded-2xl overflow-hidden bg-white hover:shadow-xl transition-all duration-300"
+                    >
+                      <Link href={`/cong-bo-thong-tin/${item.slug}`}>
+                        <a className="block h-full">
+                          <div className="aspect-[16/9] overflow-hidden relative">
+                            <img
+                              src={item.imageUrl ?? ""}
+                              alt={item.title}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                            />
+                            <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-md flex items-center gap-2 text-sm font-medium text-secondary shadow-sm">
+                              <CalendarDays className="w-4 h-4 text-primary" />
+                              {new Date(item.publishedAt).toLocaleDateString("vi-VN")}
+                            </div>
                           </div>
-                        </div>
-                        <div className="p-6">
-                          <h2 className="text-lg md:text-xl font-heading font-bold text-secondary mb-3 group-hover:text-primary transition-colors line-clamp-2">
-                            {item.title}
-                          </h2>
-                          <p className="text-muted-foreground text-sm leading-relaxed line-clamp-3 mb-5">
-                            {item.summary}
-                          </p>
-                          <span className="inline-flex items-center font-medium text-primary">
-                            Đọc tiếp <ArrowRight className="ml-2 w-4 h-4" />
-                          </span>
-                        </div>
-                      </a>
-                    </Link>
-                  </div>
-                ))}
-              </div>
+                          <div className="p-6">
+                            <h2 className="text-lg md:text-xl font-heading font-bold text-secondary mb-3 group-hover:text-primary transition-colors line-clamp-2">
+                              {item.title}
+                            </h2>
+                            <p className="text-muted-foreground text-sm leading-relaxed line-clamp-3 mb-5">
+                              {item.summary}
+                            </p>
+                            <span className="inline-flex items-center font-medium text-primary">
+                              Xem chi tiết <ArrowRight className="ml-2 w-4 h-4" />
+                            </span>
+                          </div>
+                        </a>
+                      </Link>
+                    </div>
+                  ))}
+                </div>
               </>
             )}
           </div>

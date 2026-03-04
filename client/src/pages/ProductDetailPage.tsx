@@ -4,7 +4,8 @@ import Footer from "@/components/layout/Footer";
 import { ArrowLeft, Phone, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useRoute } from "wouter";
-import { findProductBySlug, products } from "@/data/products";
+import { useQuery } from "@tanstack/react-query";
+import { getQueryFn } from "@/lib/queryClient";
 
 type SpecRow = {
   label: string;
@@ -155,10 +156,43 @@ function renderFenspatTable(): React.ReactElement {
 export default function ProductDetailPage() {
   const [match, params] = useRoute<{ slug: string }>("/san-pham/:slug");
   const slug = params?.slug ?? "";
-  const product = findProductBySlug(slug);
-  const relatedProducts = products.filter((item) => item.slug !== slug).slice(0, 4);
+  const { data, isLoading, isError } = useQuery<{
+    product: {
+      id: string;
+      slug: string;
+      name: string;
+      category: string;
+      priceLabel: string;
+      imageUrl: string | null;
+      shortDescription: string;
+      description: string;
+      publishedAt: string;
+    };
+  }>({
+    queryKey: ["/api/products", slug],
+    queryFn: getQueryFn({ on401: "throw" }),
+    enabled: Boolean(slug),
+  });
 
-  if (!match || !product) {
+  const { data: listData } = useQuery<{
+    products: {
+      slug: string;
+      name: string;
+      category: string;
+      priceLabel: string;
+      imageUrl: string | null;
+      shortDescription: string;
+    }[];
+  }>({
+    queryKey: ["/api/products?limit=20&offset=0"],
+    queryFn: getQueryFn({ on401: "throw" }),
+  });
+
+  const product = data?.product;
+  const relatedProducts =
+    listData?.products?.filter((item) => item.slug !== slug).slice(0, 4) ?? [];
+
+  if (!match) {
     return (
       <div className="min-h-screen bg-background">
         <Header />
@@ -171,6 +205,51 @@ export default function ProductDetailPage() {
                 </h1>
                 <p className="text-muted-foreground mb-8">
                   Sản phẩm bạn đang tìm kiếm không tồn tại hoặc đã được cập nhật. Vui lòng quay lại danh sách sản phẩm.
+                </p>
+                <Link href="/san-pham">
+                  <Button className="rounded-full">
+                    <ArrowLeft className="w-4 h-4 mr-2" />
+                    Quay lại danh sách sản phẩm
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </section>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <main className="pt-24">
+          <section className="py-16">
+            <div className="container mx-auto px-4">
+              <p className="text-muted-foreground">Đang tải thông tin sản phẩm...</p>
+            </div>
+          </section>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (isError || !product) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <main className="pt-24">
+          <section className="py-16">
+            <div className="container mx-auto px-4">
+              <div className="max-w-xl text-center mx-auto">
+                <h1 className="text-2xl md:text-3xl font-heading font-bold text-secondary mb-4">
+                  Không thể tải sản phẩm
+                </h1>
+                <p className="text-muted-foreground mb-8">
+                  Đã xảy ra lỗi khi tải dữ liệu. Vui lòng thử lại sau hoặc quay lại danh sách sản phẩm.
                 </p>
                 <Link href="/san-pham">
                   <Button className="rounded-full">
@@ -218,7 +297,7 @@ export default function ProductDetailPage() {
             <div className="w-full">
               <div className="rounded-2xl overflow-hidden shadow-xl border border-slate-100 bg-white">
                 <img
-                  src={product.img}
+                  src={product.imageUrl ?? ""}
                   alt={product.name}
                   className="w-full h-full object-cover"
                 />
@@ -233,7 +312,9 @@ export default function ProductDetailPage() {
                 <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
                   {product.description}
                 </p>
-                {(slug === "da-phosphate-loai-1" || slug === "da-phosphate-loai-2" || slug === "quang-apatit-tuyen") &&
+                {(slug === "da-phosphate-loai-1" ||
+                  slug === "da-phosphate-loai-2" ||
+                  slug === "quang-apatit-tuyen") &&
                   renderPhosphateTable()}
                 {slug === "quang-fenspat" && renderFenspatTable()}
               </div>
@@ -249,7 +330,7 @@ export default function ProductDetailPage() {
                   <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1">
                     Giá tham khảo
                   </div>
-                  <div className="text-base font-semibold text-primary">{product.price}</div>
+                  <div className="text-base font-semibold text-primary">{product.priceLabel}</div>
                 </div>
               </div>
 
@@ -303,7 +384,7 @@ export default function ProductDetailPage() {
                       <a className="block h-full">
                         <div className="aspect-square overflow-hidden relative">
                           <img
-                            src={item.img}
+                            src={item.imageUrl ?? ""}
                             alt={item.name}
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                           />
@@ -318,7 +399,7 @@ export default function ProductDetailPage() {
                           <p className="text-xs text-muted-foreground mb-3 line-clamp-2">
                             {item.shortDescription}
                           </p>
-                          <div className="text-sm font-semibold text-primary">{item.price}</div>
+                          <div className="text-sm font-semibold text-primary">{item.priceLabel}</div>
                         </div>
                       </a>
                     </Link>
