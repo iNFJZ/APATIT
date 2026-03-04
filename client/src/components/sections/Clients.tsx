@@ -1,7 +1,8 @@
 import { Building2, Factory, Landmark } from "lucide-react";
+import React from "react";
 
 type ClientItem = {
-  icon: JSX.Element;
+  icon: React.ReactElement;
   name: string;
   description: string;
 };

@@ -88,9 +88,11 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <a href="#" className="hover:text-primary transition-colors flex items-center gap-2 before:content-['›'] before:text-primary">
+                <Link href="/cong-bo-thong-tin">
+                  <a className="hover:text-primary transition-colors flex items-center gap-2 before:content-['›'] before:text-primary">
                   Công bố thông tin
-                </a>
+                  </a>
+                </Link>
               </li>
               <li>
                 <a href="#" className="hover:text-primary transition-colors flex items-center gap-2 before:content-['›'] before:text-primary">
