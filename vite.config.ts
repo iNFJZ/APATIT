@@ -43,6 +43,12 @@ export default defineConfig({
   server: {
     host: "0.0.0.0",
     allowedHosts: true,
+    proxy: {
+      "/api": {
+        target: `http://localhost:${process.env.VITE_API_PORT ?? "5002"}`,
+        changeOrigin: true,
+      },
+    },
     fs: {
       strict: true,
       deny: ["**/.*"],
