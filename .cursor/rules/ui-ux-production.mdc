@@ -1,0 +1,32 @@
+---
+description: Ensure all new UI features are designed and implemented with production-grade UX quality.
+alwaysApply: true
+---
+
+# Production-ready UI/UX Standard
+
+- **Default expectation**: Every new feature, page, or component must be built as nếu chuẩn production, không phải demo.
+- **Consistency**: Keep layout, spacing, typography, and colors consistent with the existing design system (Tailwind tokens, `Button`, `Input`, `Card`, etc.).
+- **States & feedback**:
+  - Luôn cân nhắc các trạng thái: loading, empty, error, success.
+  - Hiển thị feedback rõ ràng khi có lỗi hoặc sau khi người dùng thao tác (ví dụ: toast, message gần chỗ thao tác).
+- **Interactions**:
+  - Hành vi phải khớp với kỳ vọng phổ biến của người dùng trên web (scroll, back-to-top, click logo, link trong header/footer, v.v.).
+  - Nút bấm, link, input không được "vô dụng" – nếu xuất hiện thì phải có hành vi rõ ràng.
+- **Responsive**:
+  - Thiết kế tốt trên mobile, tablet, và desktop (ít nhất các breakpoint hiện đang dùng trong project).
+  - Tránh layout vỡ, text tràn, nút quá nhỏ để bấm trên mobile.
+- **Accessibility cơ bản**:
+  - Sử dụng label, placeholder, aria-label (khi cần), và focus state rõ ràng cho các thành phần tương tác.
+  - Tránh dùng màu sắc là tín hiệu duy nhất để truyền trạng thái quan trọng.
+- **Search & filters**:
+  - Khi có ô tìm kiếm/lọc, cân nhắc:
+    - Realtime filter khi gõ.
+    - Nút clear hoặc nút có hành vi rõ ràng, không để nút "Tìm kiếm" mà không làm gì.
+  - Hiển thị số lượng kết quả tìm được khi hợp lý.
+- **Navigation & scroll**:
+  - Khi người dùng bấm lại vào link trùng với trang hiện tại, xử lý scroll-to-top nếu hợp lý.
+  - Với các trang dài, cân nhắc có nút back-to-top cố định.
+- **Copy & nội dung**:
+  - Thông báo, placeholder, mô tả nên rõ ràng, lịch sự, đúng ngữ cảnh, tránh từ ngữ kỹ thuật khó hiểu đối với người dùng cuối.
+

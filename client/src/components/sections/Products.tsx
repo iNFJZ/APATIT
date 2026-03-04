@@ -1,51 +1,9 @@
 import { Link } from "wouter";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import apatitImg from "@/assets/images/product-quang-apatit-tuyen.png";
-import kaolinImg from "@/assets/images/product-kaolin.png";
-import npkImg from "@/assets/images/product-npk.png";
-import phosphateImg1 from "@/assets/images/product-phosphate1.png";
-import phosphateImg2 from "@/assets/images/product-phosphate2.png";
-import phuGiaImg from "@/assets/images/product-phu-gia.png";
-import fenspatImg from "@/assets/images/product-fenspat.png";
+import { products } from "@/data/products";
 export default function Products() {
-  const products = [
-    {
-      name: "Đá phosphate loại 1",
-      category: "Khoáng sản",
-      img: phosphateImg1,
-    },
-    {
-      name: "Đá phosphate loại 2",
-      category: "Khoáng sản",
-      img: phosphateImg2,
-    },
-    {
-      name: "Phân Bón NPK",
-      category: "Phân bón",
-      img: npkImg,
-    },
-    {
-      name: "Phụ gia các loại",
-      category: "Hóa chất",
-      img: phuGiaImg,
-    },
-    {
-      name: "Quặng Apatit tuyển",
-      category: "Khoáng sản",
-      img: apatitImg,
-    },
-    {
-      name: "Quặng Fenspát",
-      category: "Khoáng sản",
-      img: fenspatImg,
-    },
-    {
-      name: "Quặng Kaolin",
-      category: "Khoáng sản",
-      img: kaolinImg,
-    },
-  ];
+  const featuredProducts = products.slice(0, 4);
 
   return (
     <section id="products" className="py-20 md:py-32 bg-secondary text-white relative">
@@ -73,24 +31,30 @@ export default function Products() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {products.map((product, index) => (
-            <div key={index} className="group cursor-pointer">
-              <div className="relative h-[300px] md:h-[400px] rounded-2xl overflow-hidden mb-6">
-                <img 
-                  src={product.img} 
-                  alt={product.name} 
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-secondary/90 via-secondary/20 to-transparent opacity-80 group-hover:opacity-100 transition-opacity duration-300"></div>
-                
-                <div className="absolute bottom-0 left-0 p-6 w-full translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-                  <div className="text-primary text-sm font-medium mb-2">{product.category}</div>
-                  <h3 className="text-xl font-heading font-semibold text-white mb-4">{product.name}</h3>
-                  <div className="flex items-center text-sm font-medium text-white/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100">
-                    Tìm hiểu thêm <ArrowRight className="ml-2 w-4 h-4 text-primary" />
+          {featuredProducts.map((product) => (
+            <div key={product.slug} className="group cursor-pointer">
+              <Link href={`/san-pham/${product.slug}`}>
+                <a>
+                  <div className="relative h-[300px] md:h-[400px] rounded-2xl overflow-hidden mb-6">
+                    <img
+                      src={product.img}
+                      alt={product.name}
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-secondary/90 via-secondary/20 to-transparent opacity-80 group-hover:opacity-100 transition-opacity duration-300"></div>
+
+                    <div className="absolute bottom-0 left-0 p-6 w-full translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                      <div className="text-primary text-sm font-medium mb-2">{product.category}</div>
+                      <h3 className="text-xl font-heading font-semibold text-white mb-4">
+                        {product.name}
+                      </h3>
+                      <div className="flex items-center text-sm font-medium text-white/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100">
+                        Tìm hiểu thêm <ArrowRight className="ml-2 w-4 h-4 text-primary" />
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
+                </a>
+              </Link>
             </div>
           ))}
         </div>

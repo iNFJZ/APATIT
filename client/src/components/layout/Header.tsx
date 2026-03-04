@@ -2,11 +2,20 @@ import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { Menu, X, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/auth-context";
 
 export default function Header() {
+  const { isAuthenticated, logout } = useAuth();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [location] = useLocation();
+
+  const handleScrollToTopIfSameRoute = (targetHref: string) => {
+    if (location !== targetHref) {
+      return;
+    }
+    window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -22,8 +31,13 @@ export default function Header() {
     { name: "Trang chủ", href: "/" },
     { name: "Giới thiệu", href: "/gioi-thieu" },
     { name: "Sản phẩm", href: "/san-pham" },
+    { name: "Tin tức", href: "/tin-tuc" },
     { name: "Liên hệ", href: "/lien-he" },
   ];
+
+  const extendedNavLinks = isAuthenticated
+    ? [...navLinks, { name: "Nhân viên", href: "/nhan-vien" }]
+    : navLinks;
 
   return (
     <header
@@ -36,7 +50,12 @@ export default function Header() {
       <div className="container mx-auto px-4 md:px-6">
         <div className="flex items-center justify-between">
           <Link href="/">
-            <div className="flex items-center gap-3 cursor-pointer">
+            <div
+              className="flex items-center gap-3 cursor-pointer"
+              onClick={() => {
+                handleScrollToTopIfSameRoute("/");
+              }}
+            >
               <div className="w-10 h-10 rounded-full overflow-hidden bg-white shadow flex items-center justify-center">
                 <img
                   src="/image-ec7d5f4a-e673-4515-abdc-fa062a491c7a.png"
@@ -65,15 +84,20 @@ export default function Header() {
 
           <nav className="hidden lg:flex items-center gap-8">
             <ul className="flex items-center gap-6">
-              {navLinks.map((link) => (
+              {extendedNavLinks.map((link) => (
                 <li key={link.name}>
                   <Link href={link.href}>
                     <a
                       className={`font-medium text-sm transition-colors hover:text-primary ${
-                        location === link.href 
-                          ? "text-primary" 
-                          : (isScrolled || !isHomePage ? "text-secondary/80" : "text-white/90 drop-shadow-md")
+                        location === link.href
+                          ? "text-primary"
+                          : isScrolled || !isHomePage
+                          ? "text-secondary/80"
+                          : "text-white/90 drop-shadow-md"
                       }`}
+                      onClick={() => {
+                        handleScrollToTopIfSameRoute(link.href);
+                      }}
                     >
                       {link.name}
                     </a>
@@ -91,9 +115,22 @@ export default function Header() {
               >
                 <Search className="w-4 h-4" />
               </Button>
-              <Button className="rounded-full font-medium shadow-lg hover:shadow-xl transition-all">
-                Đăng nhập
-              </Button>
+              {isAuthenticated ? (
+                <Button
+                  className="rounded-full font-medium shadow-lg hover:shadow-xl transition-all"
+                  onClick={() => {
+                    void logout();
+                  }}
+                >
+                  Đăng xuất
+                </Button>
+              ) : (
+                <Link href="/dang-nhap">
+                  <Button className="rounded-full font-medium shadow-lg hover:shadow-xl transition-all">
+                    Đăng nhập
+                  </Button>
+                </Link>
+              )}
             </div>
           </nav>
 
@@ -111,14 +148,17 @@ export default function Header() {
       {mobileMenuOpen && (
         <div className="lg:hidden absolute top-full left-0 right-0 bg-white shadow-xl border-t border-gray-100 py-4 px-4 flex flex-col gap-4 animate-in slide-in-from-top-2">
           <ul className="flex flex-col gap-2">
-            {navLinks.map((link) => (
+            {extendedNavLinks.map((link) => (
               <li key={link.name}>
                 <Link href={link.href}>
                   <a
                     className={`block py-2 font-medium hover:text-primary transition-colors ${
                       location === link.href ? "text-primary" : "text-secondary"
                     }`}
-                    onClick={() => setMobileMenuOpen(false)}
+                    onClick={() => {
+                      handleScrollToTopIfSameRoute(link.href);
+                      setMobileMenuOpen(false);
+                    }}
                   >
                     {link.name}
                   </a>
@@ -127,7 +167,20 @@ export default function Header() {
             ))}
           </ul>
           <div className="pt-4 border-t border-gray-100 flex flex-col gap-3">
-            <Button className="w-full justify-center">Đăng nhập</Button>
+            {isAuthenticated ? (
+              <Button
+                className="w-full justify-center"
+                onClick={() => {
+                  void logout();
+                }}
+              >
+                Đăng xuất
+              </Button>
+            ) : (
+              <Link href="/dang-nhap">
+                <Button className="w-full justify-center">Đăng nhập</Button>
+              </Link>
+            )}
           </div>
         </div>
       )}

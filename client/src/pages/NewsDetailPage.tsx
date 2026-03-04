@@ -1,0 +1,89 @@
+import React from "react";
+import Header from "@/components/layout/Header";
+import Footer from "@/components/layout/Footer";
+import { CalendarDays, ArrowLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Link, useRoute } from "wouter";
+import { findNewsBySlug } from "@/data/news";
+
+export default function NewsDetailPage() {
+  const [match, params] = useRoute<{ slug: string }>("/tin-tuc/:slug");
+  const slug = params?.slug ?? "";
+  const item = findNewsBySlug(slug);
+
+  if (!match || !item) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <main className="pt-24">
+          <section className="py-16">
+            <div className="container mx-auto px-4">
+              <div className="max-w-xl text-center mx-auto">
+                <h1 className="text-2xl md:text-3xl font-heading font-bold text-secondary mb-4">
+                  Không tìm thấy tin tức
+                </h1>
+                <p className="text-muted-foreground mb-8">
+                  Bài viết bạn đang tìm không tồn tại hoặc đã được cập nhật. Vui lòng quay lại danh sách tin tức.
+                </p>
+                <Link href="/tin-tuc">
+                  <Button className="rounded-full">
+                    <ArrowLeft className="w-4 h-4 mr-2" />
+                    Quay lại danh sách tin tức
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </section>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-background">
+      <Header />
+      <main className="pt-24">
+        <section className="py-10 bg-slate-50 border-b">
+          <div className="container mx-auto px-4 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div>
+              <div className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground mb-3">
+                <CalendarDays className="w-4 h-4 text-primary" />
+                {item.date}
+              </div>
+              <h1 className="text-3xl md:text-4xl font-heading font-bold text-secondary mb-2">
+                {item.title}
+              </h1>
+              <p className="text-muted-foreground max-w-3xl">{item.excerpt}</p>
+            </div>
+            <div className="flex gap-3 mt-4 md:mt-0">
+              <Link href="/tin-tuc">
+                <Button variant="outline" className="rounded-full">
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  Danh sách tin tức
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        <section className="py-12">
+          <div className="container mx-auto px-4">
+            <div className="max-w-4xl mx-auto">
+              <div className="rounded-2xl overflow-hidden shadow-xl border border-slate-100 bg-white mb-8">
+                <img src={item.img} alt={item.title} className="w-full h-full object-cover" />
+              </div>
+              <article className="prose prose-slate max-w-none">
+                <p className="whitespace-pre-line text-muted-foreground leading-relaxed">
+                  {item.content}
+                </p>
+              </article>
+            </div>
+          </div>
+        </section>
+      </main>
+      <Footer />
+    </div>
+  );
+}
+

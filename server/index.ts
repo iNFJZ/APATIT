@@ -2,6 +2,8 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
+import session from "express-session";
+import createMemoryStore from "memorystore";
 
 const app = express();
 const httpServer = createServer(app);
@@ -21,6 +23,27 @@ app.use(
 );
 
 app.use(express.urlencoded({ extended: false }));
+
+const MemoryStore = createMemoryStore(session);
+const sessionSecret = process.env.SESSION_SECRET ?? "dev-session-secret";
+
+app.use(
+  session({
+    cookie: {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 1000 * 60 * 60 * 24 * 7,
+    },
+    name: "vinaapaco.sid",
+    resave: false,
+    saveUninitialized: false,
+    secret: sessionSecret,
+    store: new MemoryStore({
+      checkPeriod: 1000 * 60 * 60,
+    }),
+  }),
+);
 
 export function log(message: string, source = "express") {
   const formattedTime = new Date().toLocaleTimeString("en-US", {

@@ -81,6 +81,13 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/tin-tuc">
+                  <a className="hover:text-primary transition-colors flex items-center gap-2 before:content-['›'] before:text-primary">
+                    Tin tức
+                  </a>
+                </Link>
+              </li>
+              <li>
                 <a href="#" className="hover:text-primary transition-colors flex items-center gap-2 before:content-['›'] before:text-primary">
                   Công bố thông tin
                 </a>

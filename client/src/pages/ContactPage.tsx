@@ -69,7 +69,7 @@ export default function ContactPage() {
                       <label className="text-sm font-medium">Lời nhắn</label>
                       <Textarea placeholder="Tôi muốn tìm hiểu về..." className="min-h-[150px] rounded-xl" />
                     </div>
-                    <Button className="w-full rounded-xl py-6 text-lg">
+                    <Button className="w-full rounded-xl py-6 text-lg" type="button">
                       Gửi tin nhắn <Send className="ml-2 w-5 h-5" />
                     </Button>
                   </form>
@@ -79,10 +79,22 @@ export default function ContactPage() {
           </div>
         </section>
 
-        <section className="h-[400px] w-full bg-slate-200 grayscale">
-          {/* Placeholder for Map */}
-          <div className="w-full h-full flex items-center justify-center text-muted-foreground italic font-medium">
-            Google Maps Integration Placeholder
+        <section className="py-0 md:py-4">
+          <div className="w-full bg-slate-100">
+            <div className="container mx-auto px-4 pt-6 pb-2">
+              <h2 className="text-xl md:text-2xl font-heading font-bold text-secondary mb-4">
+                Địa chỉ trên bản đồ
+              </h2>
+            </div>
+            <div className="w-full h-[400px] md:h-[480px]">
+              <iframe
+                title="Bản đồ Công ty Apatit Việt Nam"
+                src="https://www.google.com/maps?q=Đại%20lộ%20Trần%20Hưng%20Đạo%20Tổ%2019%20Bắc%20Cường%20Phường%20Cam%20Đường%20Lào%20Cai&output=embed"
+                className="w-full h-full border-0"
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+              />
+            </div>
           </div>
         </section>
       </main>
