@@ -52,11 +52,11 @@ export default function ProductsPage() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <main className="pt-24">
+      <main className="pt-16">
         <section className="py-16 bg-slate-50 border-b">
-          <div className="container mx-auto px-4">
-            <h1 className="text-3xl md:text-4xl font-heading font-bold text-secondary mb-6">Danh mục Sản phẩm</h1>
-            <div className="flex flex-col md:flex-row gap-4 max-w-2xl">
+          <div className="container mx-auto px-4 md:px-6">
+            <h1 className="text-3xl md:text-4xl font-heading font-bold text-secondary mb-6 animate-in slide-in-from-bottom-4 duration-500">Danh mục Sản phẩm</h1>
+            <div className="flex flex-col md:flex-row gap-4 max-w-2xl animate-in slide-in-from-bottom-6 duration-600 delay-100">
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
@@ -87,8 +87,8 @@ export default function ProductsPage() {
           </div>
         </section>
 
-        <section className="py-16">
-          <div className="container mx-auto px-4">
+        <section className="py-16 md:py-20">
+          <div className="container mx-auto px-4 md:px-6">
             {isLoading ? (
               <p className="text-muted-foreground">Đang tải danh mục sản phẩm...</p>
             ) : isError ? (

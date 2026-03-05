@@ -81,9 +81,9 @@ export default function EmployeesPage() {
     return (
       <div className="min-h-screen bg-background">
         <Header />
-        <main className="pt-24">
-          <section className="py-16">
-            <div className="container mx-auto px-4">
+        <main className="pt-16">
+          <section className="py-16 md:py-20">
+            <div className="container mx-auto px-4 md:px-6">
               <div className="flex flex-col items-center justify-center gap-3 py-10">
                 <Spinner className="h-6 w-6 text-primary" />
                 <p className="text-muted-foreground text-sm">
@@ -102,9 +102,9 @@ export default function EmployeesPage() {
     return (
       <div className="min-h-screen bg-background">
         <Header />
-        <main className="pt-24">
-          <section className="py-16">
-            <div className="container mx-auto px-4">
+        <main className="pt-16">
+          <section className="py-16 md:py-20">
+            <div className="container mx-auto px-4 md:px-6">
               <div className="max-w-xl mx-auto text-center">
                 <h1 className="text-2xl md:text-3xl font-heading font-bold text-secondary mb-4">
                   Khu vực nhân viên
@@ -127,10 +127,10 @@ export default function EmployeesPage() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <main className="pt-24">
-        <section className="py-16">
-          <div className="container mx-auto px-4">
-            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-8">
+      <main className="pt-16">
+        <section className="py-16 md:py-20">
+          <div className="container mx-auto px-4 md:px-6">
+            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-8 animate-in slide-in-from-bottom-4 duration-500">
               <div>
                 <h1 className="text-3xl md:text-4xl font-heading font-bold text-secondary mb-2">
                   Danh sách nhân viên

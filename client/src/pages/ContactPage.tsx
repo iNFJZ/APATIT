@@ -9,16 +9,16 @@ export default function ContactPage() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <main className="pt-24">
-        <section className="py-20">
-          <div className="container mx-auto px-4">
+      <main className="pt-16">
+        <section className="py-16 md:py-20">
+          <div className="container mx-auto px-4 md:px-6">
             <div className="max-w-5xl mx-auto">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
                 <div>
-                  <h1 className="text-4xl font-heading font-bold text-secondary mb-6">Liên Hệ Với Chúng Tôi</h1>
-                  <p className="text-muted-foreground text-lg mb-10">Chúng tôi luôn sẵn sàng lắng nghe và giải đáp mọi thắc mắc của quý đối tác và khách hàng.</p>
+                  <h1 className="text-4xl font-heading font-bold text-secondary mb-6 animate-in slide-in-from-bottom-4 duration-500">Liên Hệ Với Chúng Tôi</h1>
+                  <p className="text-muted-foreground text-lg mb-10 animate-in slide-in-from-bottom-6 duration-600 delay-100">Chúng tôi luôn sẵn sàng lắng nghe và giải đáp mọi thắc mắc của quý đối tác và khách hàng.</p>
                   
-                  <div className="space-y-8">
+                  <div className="space-y-8 animate-in slide-in-from-bottom-8 duration-600 delay-200">
                     <div className="flex gap-4">
                       <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
                         <MapPin className="w-6 h-6 text-primary" />
@@ -49,7 +49,7 @@ export default function ContactPage() {
                   </div>
                 </div>
 
-                <div className="bg-white p-8 rounded-2xl shadow-xl border border-slate-100">
+                <div className="bg-white p-8 rounded-2xl shadow-xl border border-slate-100 animate-in slide-in-from-bottom-8 duration-600 delay-300">
                   <form className="space-y-6">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="space-y-2">
@@ -81,7 +81,7 @@ export default function ContactPage() {
 
         <section className="py-0 md:py-4">
           <div className="w-full bg-slate-100">
-            <div className="container mx-auto px-4 pt-6 pb-2">
+            <div className="container mx-auto px-4 md:px-6 pt-6 pb-2">
               <h2 className="text-xl md:text-2xl font-heading font-bold text-secondary mb-4">
                 Địa chỉ trên bản đồ
               </h2>

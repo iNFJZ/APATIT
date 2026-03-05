@@ -39,12 +39,12 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <main className="pt-24">
-        <section className="py-16">
-          <div className="container mx-auto px-4">
-            <div className="max-w-md mx-auto bg-white rounded-2xl shadow-xl border border-slate-100 p-8">
-              <h1 className="text-2xl font-heading font-bold text-secondary mb-2">Đăng nhập</h1>
-              <p className="text-muted-foreground mb-6">
+      <main className="pt-16">
+        <section className="py-16 md:py-20">
+          <div className="container mx-auto px-4 md:px-6">
+            <div className="max-w-md mx-auto bg-white rounded-2xl shadow-xl border border-slate-100 p-8 animate-in slide-in-from-bottom-6 duration-600">
+              <h1 className="text-2xl font-heading font-bold text-secondary mb-2 animate-in slide-in-from-bottom-4 duration-500">Đăng nhập</h1>
+              <p className="text-muted-foreground mb-6 animate-in slide-in-from-bottom-6 duration-600 delay-100">
                 Chỉ nhân viên được cấp tài khoản mới có thể truy cập mục nội bộ.
               </p>
               <form className="space-y-4" onSubmit={handleSubmit}>

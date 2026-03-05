@@ -196,9 +196,9 @@ export default function ProductDetailPage() {
     return (
       <div className="min-h-screen bg-background">
         <Header />
-        <main className="pt-24">
-          <section className="py-16">
-            <div className="container mx-auto px-4">
+        <main className="pt-16">
+          <section className="py-16 md:py-20">
+            <div className="container mx-auto px-4 md:px-6">
               <div className="max-w-xl text-center mx-auto">
                 <h1 className="text-2xl md:text-3xl font-heading font-bold text-secondary mb-4">
                   Không tìm thấy sản phẩm
@@ -225,9 +225,9 @@ export default function ProductDetailPage() {
     return (
       <div className="min-h-screen bg-background">
         <Header />
-        <main className="pt-24">
-          <section className="py-16">
-            <div className="container mx-auto px-4">
+        <main className="pt-16">
+          <section className="py-16 md:py-20">
+            <div className="container mx-auto px-4 md:px-6">
               <p className="text-muted-foreground">Đang tải thông tin sản phẩm...</p>
             </div>
           </section>
@@ -241,9 +241,9 @@ export default function ProductDetailPage() {
     return (
       <div className="min-h-screen bg-background">
         <Header />
-        <main className="pt-24">
-          <section className="py-16">
-            <div className="container mx-auto px-4">
+        <main className="pt-16">
+          <section className="py-16 md:py-20">
+            <div className="container mx-auto px-4 md:px-6">
               <div className="max-w-xl text-center mx-auto">
                 <h1 className="text-2xl md:text-3xl font-heading font-bold text-secondary mb-4">
                   Không thể tải sản phẩm
@@ -269,17 +269,17 @@ export default function ProductDetailPage() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <main className="pt-24">
-        <section className="py-10 bg-slate-50 border-b">
-          <div className="container mx-auto px-4 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <main className="pt-16">
+        <section className="pt-8 pb-10 md:pt-12 md:pb-10 bg-slate-50 border-b">
+          <div className="container mx-auto px-4 md:px-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
-              <p className="text-sm uppercase tracking-[0.2em] text-primary font-semibold mb-3">
+              <p className="text-sm uppercase tracking-[0.2em] text-primary font-semibold mb-3 animate-in slide-in-from-bottom-4 duration-500">
                 {product.category}
               </p>
-              <h1 className="text-3xl md:text-4xl font-heading font-bold text-secondary mb-2">
+              <h1 className="text-3xl md:text-4xl font-heading font-bold text-secondary mb-2 animate-in slide-in-from-bottom-6 duration-600 delay-100">
                 {product.name}
               </h1>
-              <p className="text-muted-foreground max-w-2xl">{product.shortDescription}</p>
+              <p className="text-muted-foreground max-w-2xl animate-in slide-in-from-bottom-8 duration-600 delay-200">{product.shortDescription}</p>
             </div>
             <div className="flex gap-3 mt-4 md:mt-0">
               <Link href="/san-pham">
@@ -292,8 +292,8 @@ export default function ProductDetailPage() {
           </div>
         </section>
 
-        <section className="py-12">
-          <div className="container mx-auto px-4 grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-start">
+        <section className="py-16 md:py-20">
+          <div className="container mx-auto px-4 md:px-6 grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-start">
             <div className="w-full">
               <div className="rounded-2xl overflow-hidden shadow-xl border border-slate-100 bg-white">
                 <img
@@ -362,8 +362,8 @@ export default function ProductDetailPage() {
         </section>
 
         {relatedProducts.length > 0 && (
-          <section className="pb-16">
-            <div className="container mx-auto px-4">
+          <section className="py-16 md:py-20">
+            <div className="container mx-auto px-4 md:px-6">
               <div className="flex items-center justify-between mb-8">
                 <h2 className="text-xl md:text-2xl font-heading font-bold text-secondary">
                   Sản phẩm tương tự

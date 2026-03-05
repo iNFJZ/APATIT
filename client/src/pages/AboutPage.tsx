@@ -37,24 +37,24 @@ export default function AboutPage() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <main className="pt-24">
-        <section className="py-16 md:py-24 bg-secondary text-white">
-          <div className="container mx-auto px-4 flex flex-col md:flex-row items-center gap-10">
+      <main className="pt-16">
+        <section className="pt-8 pb-10 md:pt-12 md:pb-14 bg-secondary text-white">
+          <div className="container mx-auto px-4 md:px-6 flex flex-col md:flex-row items-center gap-10">
             <div className="flex-1 space-y-6">
-              <div className="inline-flex items-center gap-2 text-sm font-semibold text-primary bg-white/10 rounded-full px-4 py-1">
+              <div className="inline-flex items-center gap-2 text-sm font-semibold text-primary bg-white/10 rounded-full px-4 py-1 animate-in slide-in-from-bottom-4 duration-500">
                 <span className="w-2 h-2 rounded-full bg-primary" />
                 Hơn 60 năm hình thành và phát triển
               </div>
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-heading font-bold leading-tight">
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-heading font-bold leading-tight animate-in slide-in-from-bottom-6 duration-700 delay-100">
                 Đơn vị chủ lực trong khai thác
                 <span className="block text-primary">và chế biến quặng Apatit Việt Nam</span>
               </h1>
-              <p className="text-white/80 max-w-2xl text-base md:text-lg">
+              <p className="text-white/80 max-w-2xl text-base md:text-lg animate-in slide-in-from-bottom-8 duration-700 delay-200">
                 Công ty TNHH MTV Apatit Việt Nam (VINAAPACO) là doanh nghiệp đầu ngành trong lĩnh vực khai thác khoáng
                 sản, sản xuất phân bón và hóa chất, đóng góp quan trọng cho phát triển nông nghiệp và công nghiệp của
                 đất nước.
               </p>
-              <div className="flex flex-wrap gap-4">
+              <div className="flex flex-wrap gap-4 animate-in slide-in-from-bottom-10 duration-700 delay-300">
                 <Button className="rounded-full px-8" asChild>
                   <a href="/san-pham">Khám phá sản phẩm</a>
                 </Button>
@@ -64,25 +64,25 @@ export default function AboutPage() {
               </div>
             </div>
             <div className="flex-1 grid grid-cols-2 gap-4 md:gap-6">
-              <div className="rounded-2xl bg-white/10 backdrop-blur p-5 border border-white/15">
+              <div className="rounded-2xl bg-white/10 backdrop-blur p-5 border border-white/15 animate-in slide-in-from-bottom-6 duration-600 delay-150">
                 <History className="w-8 h-8 text-primary mb-3" />
                 <p className="text-xs uppercase tracking-[0.2em] text-white/60 mb-1">KINH NGHIỆM</p>
                 <p className="text-2xl font-heading font-bold">60+ năm</p>
                 <p className="text-xs text-white/70 mt-1">khai thác và chế biến quặng Apatit</p>
               </div>
-              <div className="rounded-2xl bg-white/10 backdrop-blur p-5 border border-white/15">
+              <div className="rounded-2xl bg-white/10 backdrop-blur p-5 border border-white/15 animate-in slide-in-from-bottom-6 duration-600 delay-200">
                 <Factory className="w-8 h-8 text-primary mb-3" />
                 <p className="text-xs uppercase tracking-[0.2em] text-white/60 mb-1">LĨNH VỰC</p>
                 <p className="text-2xl font-heading font-bold">4+</p>
                 <p className="text-xs text-white/70 mt-1">khai khoáng, phân bón, hóa chất, xây dựng</p>
               </div>
-              <div className="rounded-2xl bg-white/10 backdrop-blur p-5 border border-white/15">
+              <div className="rounded-2xl bg-white/10 backdrop-blur p-5 border border-white/15 animate-in slide-in-from-bottom-6 duration-600 delay-250">
                 <Users className="w-8 h-8 text-primary mb-3" />
                 <p className="text-xs uppercase tracking-[0.2em] text-white/60 mb-1">ĐỘI NGŨ</p>
                 <p className="text-2xl font-heading font-bold">Hàng nghìn</p>
                 <p className="text-xs text-white/70 mt-1">cán bộ, kỹ sư và công nhân lành nghề</p>
               </div>
-              <div className="rounded-2xl bg-white/10 backdrop-blur p-5 border border-white/15">
+              <div className="rounded-2xl bg-white/10 backdrop-blur p-5 border border-white/15 animate-in slide-in-from-bottom-6 duration-600 delay-300">
                 <TreePine className="w-8 h-8 text-primary mb-3" />
                 <p className="text-xs uppercase tracking-[0.2em] text-white/60 mb-1">ĐỊNH HƯỚNG</p>
                 <p className="text-2xl font-heading font-bold">Bền vững</p>
@@ -93,7 +93,7 @@ export default function AboutPage() {
         </section>
 
         <section className="py-16 md:py-20">
-          <div className="container mx-auto px-4 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
+          <div className="container mx-auto px-4 md:px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
             <div className="space-y-6">
               <h2 className="text-2xl md:text-3xl font-heading font-bold text-secondary">Về VINAAPACO</h2>
               <p className="text-muted-foreground">
@@ -109,20 +109,20 @@ export default function AboutPage() {
               </p>
               <ul className="space-y-3">
                 <li className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-primary mt-0.5" />
+                  <CheckCircle2 className="w-5 h-5 shrink-0 text-primary mt-0.5" aria-hidden />
                   <span className="text-sm text-muted-foreground">
                     Hệ thống mỏ và nhà máy tuyển quặng trải dài trên địa bàn tỉnh Lào Cai.
                   </span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-primary mt-0.5" />
+                  <CheckCircle2 className="w-5 h-5 shrink-0 text-primary mt-0.5" aria-hidden />
                   <span className="text-sm text-muted-foreground">
                     Danh mục sản phẩm phong phú: quặng Apatit tuyển, đá phosphate, quặng Fenspát, Kaolin, phân bón NPK
                     và phụ gia các loại.
                   </span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-primary mt-0.5" />
+                  <CheckCircle2 className="w-5 h-5 shrink-0 text-primary mt-0.5" aria-hidden />
                   <span className="text-sm text-muted-foreground">
                     Mối quan hệ hợp tác bền chặt với các tập đoàn hóa chất, doanh nghiệp phân bón và đối tác hạ tầng
                     trên cả nước.
@@ -177,8 +177,8 @@ export default function AboutPage() {
           </div>
         </section>
 
-        <section className="py-16 bg-slate-50">
-          <div className="container mx-auto px-4">
+        <section className="py-16 md:py-20 bg-slate-50">
+          <div className="container mx-auto px-4 md:px-6">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-10">
               <div>
                 <h2 className="text-2xl md:text-3xl font-heading font-bold text-secondary mb-2">

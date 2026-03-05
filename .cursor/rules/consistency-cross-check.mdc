@@ -1,0 +1,30 @@
+---
+description: Khi triển khai chức năng mới phải rà soát các màn/chức năng đã có và đảm bảo đồng nhất cấu trúc code.
+alwaysApply: true
+---
+
+# Đồng nhất & đồng bộ cấu trúc khi triển khai chức năng
+
+## Nguyên tắc
+
+- **Mỗi khi thêm hoặc sửa chức năng/màn hình**: Trước khi kết thúc, kiểm tra lại các màn và chức năng **đã có** liên quan (cùng loại trang, cùng flow) và đảm bảo **đồng nhất** cấu trúc, class, pattern với nhau.
+- **Không tạo ngoại lệ**: Một trang dùng `pt-16` + `px-4 md:px-6` + `py-16 md:py-20` thì trang cùng loại cũng phải dùng đúng như vậy; không để một số trang khác biệt.
+
+## Chuẩn cấu trúc trang (client)
+
+- **Layout**: `min-h-screen bg-background` → `Header` → `main className="pt-16"` → nội dung → `Footer`. (Trang chủ không cần `pt-16` trên `main` vì Hero full-viewport.)
+- **Container**: Luôn `container mx-auto px-4 md:px-6` (kể cả section loading, error, not-found).
+- **Section nội dung**: `py-16 md:py-20`; hero/banner đầu trang: `pt-8 pb-10 md:pt-12 md:pb-14` (hoặc tương đương), không sát header.
+- **Hiệu ứng đầu trang**: Các trang có hero/tiêu đề chính dùng `animate-in slide-in-from-bottom-*` với `duration-500/600/700` và `delay-100/200/300` thống nhất (tham chiếu AboutPage, SolutionsPage, ProductsPage, ContactPage).
+
+## Checklist khi thêm/sửa tính năng
+
+1. **Trang mới hoặc section mới**: So với các trang tương tự (list page, detail page, form page) — cùng pattern layout, container, section padding, animation.
+2. **State phụ** (loading, error, not-found): Cùng `section` padding và `container` padding như state chính; không dùng riêng `px-4` khi các trang khác dùng `px-4 md:px-6`.
+3. **Component dùng chung** (Header, Footer, sections): Nếu đổi container/padding ở một nơi, cân nhắc áp dụng đồng bộ chỗ còn lại.
+4. **Sau khi sửa**: Chạy build và mở nhanh vài trang liên quan để xác nhận không vỡ layout, không lệch so với các màn đã có.
+
+## Ví dụ
+
+- Thêm trang "Dự án" → so với SolutionsPage, ProductsPage: cùng `main pt-16`, section hero + section list, container `px-4 md:px-6`, section `py-16 md:py-20`, có animate-in cho tiêu đề/hero.
+- Thêm state "Không tìm thấy" trong detail → giống SolutionDetailPage/ProductDetailPage: section `py-16 md:py-20`, container `px-4 md:px-6`, nút "Quay lại" + copy rõ ràng.

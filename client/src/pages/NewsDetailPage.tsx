@@ -35,9 +35,9 @@ export default function NewsDetailPage() {
     return (
       <div className="min-h-screen bg-background">
         <Header />
-        <main className="pt-24">
-          <section className="py-16">
-            <div className="container mx-auto px-4">
+        <main className="pt-16">
+          <section className="py-16 md:py-20">
+            <div className="container mx-auto px-4 md:px-6">
               <div className="max-w-xl text-center mx-auto">
                 <h1 className="text-2xl md:text-3xl font-heading font-bold text-secondary mb-4">
                   Không tìm thấy tin tức
@@ -64,9 +64,9 @@ export default function NewsDetailPage() {
     return (
       <div className="min-h-screen bg-background">
         <Header />
-        <main className="pt-24">
-          <section className="py-16">
-            <div className="container mx-auto px-4">
+        <main className="pt-16">
+          <section className="py-16 md:py-20">
+            <div className="container mx-auto px-4 md:px-6">
               <p className="text-muted-foreground">Đang tải nội dung bài viết...</p>
             </div>
           </section>
@@ -80,9 +80,9 @@ export default function NewsDetailPage() {
     return (
       <div className="min-h-screen bg-background">
         <Header />
-        <main className="pt-24">
-          <section className="py-16">
-            <div className="container mx-auto px-4">
+        <main className="pt-16">
+          <section className="py-16 md:py-20">
+            <div className="container mx-auto px-4 md:px-6">
               <div className="max-w-xl text-center mx-auto">
                 <h1 className="text-2xl md:text-3xl font-heading font-bold text-secondary mb-4">
                   Không thể tải bài viết
@@ -108,18 +108,18 @@ export default function NewsDetailPage() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <main className="pt-24">
-        <section className="py-10 bg-slate-50 border-b">
-          <div className="container mx-auto px-4 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <main className="pt-16">
+        <section className="pt-8 pb-10 md:pt-12 md:pb-10 bg-slate-50 border-b">
+          <div className="container mx-auto px-4 md:px-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
-              <div className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground mb-3">
+              <div className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground mb-3 animate-in slide-in-from-bottom-4 duration-500">
                 <CalendarDays className="w-4 h-4 text-primary" />
                   {new Date(item.publishedAt).toLocaleDateString("vi-VN")}
               </div>
-              <h1 className="text-3xl md:text-4xl font-heading font-bold text-secondary mb-2">
+              <h1 className="text-3xl md:text-4xl font-heading font-bold text-secondary mb-2 animate-in slide-in-from-bottom-6 duration-600 delay-100">
                 {item.title}
               </h1>
-              <p className="text-muted-foreground max-w-3xl">{item.summary}</p>
+              <p className="text-muted-foreground max-w-3xl animate-in slide-in-from-bottom-8 duration-600 delay-200">{item.summary}</p>
             </div>
             <div className="flex gap-3 mt-4 md:mt-0">
               <Link href="/tin-tuc">
@@ -132,8 +132,8 @@ export default function NewsDetailPage() {
           </div>
         </section>
 
-        <section className="py-12">
-          <div className="container mx-auto px-4">
+        <section className="py-16 md:py-20">
+          <div className="container mx-auto px-4 md:px-6">
             <div className="max-w-4xl mx-auto">
               <div className="rounded-2xl overflow-hidden shadow-xl border border-slate-100 bg-white mb-8">
                 <img src={item.imageUrl ?? ""} alt={item.title} className="w-full h-full object-cover" />

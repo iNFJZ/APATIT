@@ -65,9 +65,9 @@ export default function EmployeeDetailPage() {
     return (
       <div className="min-h-screen bg-background">
         <Header />
-        <main className="pt-24">
-          <section className="py-16">
-            <div className="container mx-auto px-4">
+        <main className="pt-16">
+          <section className="py-16 md:py-20">
+            <div className="container mx-auto px-4 md:px-6">
               <div className="flex flex-col items-center justify-center gap-3 py-10">
                 <Spinner className="h-6 w-6 text-primary" />
                 <p className="text-muted-foreground text-sm">
@@ -86,9 +86,9 @@ export default function EmployeeDetailPage() {
     return (
       <div className="min-h-screen bg-background">
         <Header />
-        <main className="pt-24">
-          <section className="py-16">
-            <div className="container mx-auto px-4">
+        <main className="pt-16">
+          <section className="py-16 md:py-20">
+            <div className="container mx-auto px-4 md:px-6">
               <div className="max-w-xl mx-auto text-center">
                 <h1 className="text-2xl md:text-3xl font-heading font-bold text-secondary mb-4">
                   Khu vực nhân viên
@@ -112,9 +112,9 @@ export default function EmployeeDetailPage() {
     return (
       <div className="min-h-screen bg-background">
         <Header />
-        <main className="pt-24">
-          <section className="py-16">
-            <div className="container mx-auto px-4">
+        <main className="pt-16">
+          <section className="py-16 md:py-20">
+            <div className="container mx-auto px-4 md:px-6">
               <div className="max-w-xl mx-auto text-center">
                 <h1 className="text-2xl md:text-3xl font-heading font-bold text-secondary mb-4">
                   Không tìm thấy nhân viên
@@ -138,9 +138,9 @@ export default function EmployeeDetailPage() {
     return (
       <div className="min-h-screen bg-background">
         <Header />
-        <main className="pt-24">
-          <section className="py-16">
-            <div className="container mx-auto px-4 max-w-2xl text-center">
+        <main className="pt-16">
+          <section className="py-16 md:py-20">
+            <div className="container mx-auto px-4 md:px-6 max-w-2xl text-center">
               <h1 className="text-2xl md:text-3xl font-heading font-bold text-secondary mb-4">
                 Không thể tải thông tin nhân viên
               </h1>
@@ -161,10 +161,10 @@ export default function EmployeeDetailPage() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <main className="pt-24">
-        <section className="py-16">
-          <div className="container mx-auto px-4 max-w-4xl">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-8">
+      <main className="pt-16">
+        <section className="py-16 md:py-20">
+          <div className="container mx-auto px-4 md:px-6 max-w-4xl">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-8 animate-in slide-in-from-bottom-4 duration-500">
               <div className="flex items-center gap-4">
                 <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 text-2xl font-semibold">
                   {employee.fullName.slice(0, 1)}

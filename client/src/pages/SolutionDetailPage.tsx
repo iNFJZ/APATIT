@@ -14,9 +14,9 @@ export default function SolutionDetailPage() {
     return (
       <div className="min-h-screen bg-background">
         <Header />
-        <main className="pt-24">
-          <section className="py-16">
-            <div className="container mx-auto px-4">
+        <main className="pt-16">
+          <section className="py-16 md:py-20">
+            <div className="container mx-auto px-4 md:px-6">
               <div className="max-w-xl text-center mx-auto">
                 <h1 className="text-2xl md:text-3xl font-heading font-bold text-secondary mb-4">
                   Không tìm thấy giải pháp
@@ -44,10 +44,10 @@ export default function SolutionDetailPage() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <main className="pt-24">
-        <section className="py-14 md:py-18 bg-secondary text-white">
-          <div className="container mx-auto px-4 flex flex-col gap-6">
-            <div className="flex items-center justify-between gap-4 flex-wrap">
+      <main className="pt-16">
+        <section className="pt-8 pb-14 md:pt-12 md:pb-16 bg-secondary text-white">
+          <div className="container mx-auto px-4 md:px-6 flex flex-col gap-6">
+            <div className="flex items-center justify-between gap-4 flex-wrap animate-in slide-in-from-bottom-4 duration-500">
               <div className="inline-flex items-center gap-3 text-primary bg-white/10 rounded-full px-4 py-1">
                 <span className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center text-primary">
                   {solution.icon}
@@ -61,15 +61,15 @@ export default function SolutionDetailPage() {
                 </Button>
               </Link>
             </div>
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-heading font-bold leading-tight">
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-heading font-bold leading-tight animate-in slide-in-from-bottom-6 duration-700 delay-100">
               {solution.title}
             </h1>
-            <p className="text-white/80 max-w-3xl text-base md:text-lg">{solution.summary}</p>
+            <p className="text-white/80 max-w-3xl text-base md:text-lg animate-in slide-in-from-bottom-8 duration-700 delay-200">{solution.summary}</p>
           </div>
         </section>
 
         <section className="py-16 md:py-20">
-          <div className="container mx-auto px-4 grid grid-cols-1 lg:grid-cols-[minmax(0,240px)_minmax(0,1fr)] gap-10">
+          <div className="container mx-auto px-4 md:px-6 grid grid-cols-1 lg:grid-cols-[minmax(0,240px)_minmax(0,1fr)] gap-10">
             <aside className="lg:sticky lg:top-28 h-fit">
               <div className="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
                 <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-3">Danh mục</p>
