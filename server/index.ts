@@ -26,6 +26,16 @@ app.use(express.urlencoded({ extended: false }));
 
 const MemoryStore = createMemoryStore(session);
 const sessionSecret = process.env.SESSION_SECRET ?? "dev-session-secret";
+// Production: consider connect-pg-simple for persistent session store (sessions survive restarts).
+
+if (process.env.NODE_ENV === "production") {
+  if (!process.env.SESSION_SECRET || process.env.SESSION_SECRET.length < 32) {
+    console.error(
+      "FATAL: In production, SESSION_SECRET must be set and at least 32 characters. Refusing to start.",
+    );
+    process.exit(1);
+  }
+}
 
 app.use(
   session({
@@ -71,10 +81,10 @@ app.use((req, res, next) => {
     const duration = Date.now() - start;
     if (path.startsWith("/api")) {
       let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
-      if (capturedJsonResponse) {
+      const isSensitivePath = path === "/api/login" || path === "/api/me";
+      if (capturedJsonResponse && !isSensitivePath) {
         logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
       }
-
       log(logLine);
     }
   });
@@ -85,11 +95,15 @@ app.use((req, res, next) => {
 (async () => {
   await registerRoutes(httpServer, app);
 
-  app.use((err: any, _req: Request, res: Response, next: NextFunction) => {
-    const status = err.status || err.statusCode || 500;
-    const message = err.message || "Internal Server Error";
+  app.use((err: unknown, _req: Request, res: Response, next: NextFunction) => {
+    const status =
+      (err as { status?: number }).status ?? (err as { statusCode?: number }).statusCode ?? 500;
+    const isClientError = status >= 400 && status < 500;
+    const message = isClientError && err instanceof Error ? err.message : "Internal Server Error";
 
-    console.error("Internal Server Error:", err);
+    if (status >= 500) {
+      console.error("Internal Server Error:", err);
+    }
 
     if (res.headersSent) {
       return next(err);

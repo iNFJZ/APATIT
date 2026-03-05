@@ -1,13 +1,15 @@
-import { useState, useEffect } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
-import { Menu, X, Search } from "lucide-react";
+import { ArrowRight, ChevronDown, Menu, X, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/auth-context";
+import { solutions } from "@/lib/solutions";
 
 export default function Header() {
   const { isAuthenticated, logout } = useAuth();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileSolutionsOpen, setMobileSolutionsOpen] = useState(false);
   const [location] = useLocation();
 
   const handleScrollToTopIfSameRoute = (targetHref: string) => {
@@ -30,6 +32,7 @@ export default function Header() {
   const navLinks = [
     { name: "Trang chủ", href: "/" },
     { name: "Giới thiệu", href: "/gioi-thieu" },
+    { name: "Giải pháp", href: "/giai-phap" },
     { name: "Công bố", href: "/cong-bo-thong-tin" },
     { name: "Sản phẩm", href: "/san-pham" },
     { name: "Tin tức", href: "/tin-tuc" },
@@ -39,6 +42,15 @@ export default function Header() {
   const extendedNavLinks = isAuthenticated
     ? [...navLinks, { name: "Nhân viên", href: "/nhan-vien" }]
     : navLinks;
+
+  const solutionsLinks = useMemo(
+    () =>
+      solutions.map((item) => ({
+        name: item.title,
+        href: `/giai-phap/${item.slug}`,
+      })),
+    [],
+  );
 
   return (
     <header
@@ -85,26 +97,68 @@ export default function Header() {
 
           <nav className="hidden lg:flex items-center gap-8">
             <ul className="flex items-center gap-6">
-              {extendedNavLinks.map((link) => (
-                <li key={link.name}>
-                  <Link href={link.href}>
-                    <a
-                      className={`font-medium text-sm transition-colors hover:text-primary ${
-                        location === link.href
-                          ? "text-primary"
-                          : isScrolled || !isHomePage
-                          ? "text-secondary/80"
-                          : "text-white/90 drop-shadow-md"
-                      }`}
-                      onClick={() => {
-                        handleScrollToTopIfSameRoute(link.href);
-                      }}
-                    >
-                      {link.name}
-                    </a>
-                  </Link>
-                </li>
-              ))}
+              {extendedNavLinks.map((link) => {
+                if (link.href !== "/giai-phap") {
+                  return (
+                    <li key={link.name}>
+                      <Link href={link.href}>
+                        <a
+                          className={`font-medium text-sm transition-colors hover:text-primary ${
+                            location === link.href
+                              ? "text-primary"
+                              : isScrolled || !isHomePage
+                              ? "text-secondary/80"
+                              : "text-white/90 drop-shadow-md"
+                          }`}
+                          onClick={() => {
+                            handleScrollToTopIfSameRoute(link.href);
+                          }}
+                        >
+                          {link.name}
+                        </a>
+                      </Link>
+                    </li>
+                  );
+                }
+
+                const isActive = location === "/giai-phap" || location.startsWith("/giai-phap/");
+
+                return (
+                  <li key={link.name} className="relative">
+                    <div className="inline-flex flex-col group">
+                      <Link href="/giai-phap">
+                        <a
+                          className={`font-medium text-sm transition-colors hover:text-primary inline-flex items-center gap-1 ${
+                            isActive
+                              ? "text-primary"
+                              : isScrolled || !isHomePage
+                              ? "text-secondary/80"
+                              : "text-white/90 drop-shadow-md"
+                          }`}
+                          onClick={() => {
+                            handleScrollToTopIfSameRoute("/giai-phap");
+                          }}
+                        >
+                          Giải pháp <ChevronDown className="w-4 h-4 opacity-80" />
+                        </a>
+                      </Link>
+
+                      <div className="absolute left-[-0.5rem] top-full pt-3 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-opacity">
+                        <div className="w-[260px] rounded-2xl border border-slate-100 bg-white shadow-xl overflow-hidden py-2">
+                          {solutionsLinks.map((item) => (
+                            <Link key={item.href} href={item.href}>
+                              <a className="relative flex items-center px-4 py-2.5 text-sm text-secondary hover:text-primary hover:bg-primary/5 transition-colors group/item">
+                                <span>{item.name}</span>
+                                <ArrowRight className="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 translate-x-[-120%] transition-all duration-700 w-4 h-4 group-hover/item:opacity-100 group-hover/item:translate-x-0" />
+                              </a>
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+                );
+              })}
             </ul>
             <div className="flex items-center gap-3">
               <Button
@@ -149,23 +203,72 @@ export default function Header() {
       {mobileMenuOpen && (
         <div className="lg:hidden absolute top-full left-0 right-0 bg-white shadow-xl border-t border-gray-100 py-4 px-4 flex flex-col gap-4 animate-in slide-in-from-top-2">
           <ul className="flex flex-col gap-2">
-            {extendedNavLinks.map((link) => (
-              <li key={link.name}>
-                <Link href={link.href}>
-                  <a
-                    className={`block py-2 font-medium hover:text-primary transition-colors ${
-                      location === link.href ? "text-primary" : "text-secondary"
-                    }`}
-                    onClick={() => {
-                      handleScrollToTopIfSameRoute(link.href);
-                      setMobileMenuOpen(false);
-                    }}
+            {extendedNavLinks.map((link) => {
+              if (link.href !== "/giai-phap") {
+                return (
+                  <li key={link.name}>
+                    <Link href={link.href}>
+                      <a
+                        className={`block py-2 font-medium hover:text-primary transition-colors ${
+                          location === link.href ? "text-primary" : "text-secondary"
+                        }`}
+                        onClick={() => {
+                          handleScrollToTopIfSameRoute(link.href);
+                          setMobileMenuOpen(false);
+                        }}
+                      >
+                        {link.name}
+                      </a>
+                    </Link>
+                  </li>
+                );
+              }
+
+              return (
+                <li key={link.name}>
+                  <button
+                    type="button"
+                    className="w-full flex items-center justify-between py-2 font-medium text-secondary hover:text-primary transition-colors"
+                    onClick={() => setMobileSolutionsOpen(!mobileSolutionsOpen)}
                   >
-                    {link.name}
-                  </a>
-                </Link>
-              </li>
-            ))}
+                    <span>Giải pháp</span>
+                    <ChevronDown className={`w-5 h-5 transition-transform ${mobileSolutionsOpen ? "rotate-180" : ""}`} />
+                  </button>
+                  {mobileSolutionsOpen ? (
+                    <div className="pl-3 pb-2">
+                      <Link href="/giai-phap">
+                        <a
+                          className="block py-2 text-sm font-semibold text-primary"
+                          onClick={() => {
+                            setMobileMenuOpen(false);
+                            setMobileSolutionsOpen(false);
+                          }}
+                        >
+                          Xem tất cả
+                        </a>
+                      </Link>
+                      <ul className="flex flex-col gap-1">
+                        {solutionsLinks.map((item) => (
+                          <li key={item.href}>
+                            <Link href={item.href}>
+                              <a
+                                className="block py-2 text-sm text-secondary hover:text-primary transition-colors"
+                                onClick={() => {
+                                  setMobileMenuOpen(false);
+                                  setMobileSolutionsOpen(false);
+                                }}
+                              >
+                                {item.name}
+                              </a>
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : null}
+                </li>
+              );
+            })}
           </ul>
           <div className="pt-4 border-t border-gray-100 flex flex-col gap-3">
             {isAuthenticated ? (

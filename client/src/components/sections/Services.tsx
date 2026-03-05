@@ -1,39 +1,8 @@
-import { Layers, Pickaxe, Tractor, TrainTrack, Building2, Globe } from "lucide-react";
+import { Link } from "wouter";
+import { ArrowRight } from "lucide-react";
+import { solutions } from "@/lib/solutions";
 
 export default function Services() {
-  const services = [
-    {
-      icon: <Pickaxe className="w-8 h-8" />,
-      title: "Khai thác khoáng sản",
-      desc: "Khai thác khoáng hóa chất và khoáng phân bón (quặng Apatit) từ các mỏ quy mô lớn với công nghệ hiện đại."
-    },
-    {
-      icon: <Layers className="w-8 h-8" />,
-      title: "Dịch vụ hỗ trợ",
-      desc: "Cung cấp dịch vụ hỗ trợ khai thác mỏ và quặng cho các đối tác trong và ngoài nước một cách chuyên nghiệp."
-    },
-    {
-      icon: <Tractor className="w-8 h-8" />,
-      title: "Sản xuất phân bón",
-      desc: "Nghiên cứu, sản xuất các loại phân bón NPK và các loại hợp chất nitơ chất lượng cao phục vụ nông nghiệp."
-    },
-    {
-      icon: <TrainTrack className="w-8 h-8" />,
-      title: "Xây dựng hạ tầng",
-      desc: "Thi công các công trình đường sắt, đường bộ, cầu cống và hệ thống giao thông vận tải chuyên dụng."
-    },
-    {
-      icon: <Building2 className="w-8 h-8" />,
-      title: "Công trình công ích",
-      desc: "Xây dựng nhà ở, nhà làm việc, nhà kho và các công trình công cộng, công trình nông nghiệp."
-    },
-    {
-      icon: <Globe className="w-8 h-8" />,
-      title: "Xuất nhập khẩu",
-      desc: "Xuất nhập khẩu nguyên vật liệu, vật tư, thiết bị và hàng hóa phục vụ sản xuất kinh doanh."
-    }
-  ];
-
   return (
     <section id="services" className="py-20 md:py-32 bg-slate-50 relative overflow-hidden">
       {/* Abstract Background Shapes */}
@@ -56,21 +25,21 @@ export default function Services() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {services.map((service, index) => (
-            <div 
-              key={index} 
-              className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 hover:shadow-xl hover:border-primary/20 transition-all duration-300 group"
-            >
-              <div className="w-16 h-16 rounded-2xl bg-slate-50 text-secondary flex items-center justify-center mb-6 group-hover:bg-primary group-hover:text-white transition-colors duration-300">
-                {service.icon}
-              </div>
-              <h3 className="text-xl font-heading font-semibold text-secondary mb-4 group-hover:text-primary transition-colors">
-                {service.title}
-              </h3>
-              <p className="text-muted-foreground leading-relaxed">
-                {service.desc}
-              </p>
-            </div>
+          {solutions.map((service) => (
+            <Link key={service.slug} href={`/giai-phap/${service.slug}`}>
+              <a className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 hover:shadow-xl hover:border-primary/20 transition-all duration-300 group block">
+                <div className="w-16 h-16 rounded-2xl bg-slate-50 text-secondary flex items-center justify-center mb-6 group-hover:bg-primary group-hover:text-white transition-colors duration-300">
+                  {service.icon}
+                </div>
+                <h3 className="text-xl font-heading font-semibold text-secondary mb-4 group-hover:text-primary transition-colors">
+                  {service.title}
+                </h3>
+                <p className="text-muted-foreground leading-relaxed mb-6">{service.summary}</p>
+                <span className="inline-flex items-center text-sm font-medium text-primary">
+                  Xem chi tiết <ArrowRight className="ml-2 w-4 h-4" />
+                </span>
+              </a>
+            </Link>
           ))}
         </div>
       </div>
