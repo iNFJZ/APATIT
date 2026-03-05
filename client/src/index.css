@@ -79,3 +79,27 @@
     @apply font-heading tracking-tight;
   }
 }
+
+.logo-marquee {
+  position: relative;
+  overflow: hidden;
+}
+
+.logo-marquee-track {
+  display: flex;
+  width: max-content;
+  animation: logo-marquee 25s linear infinite;
+}
+
+.logo-marquee-track:hover {
+  animation-play-state: paused;
+}
+
+@keyframes logo-marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}

@@ -24,7 +24,12 @@ export default function Footer() {
               Hơn 60 năm xây dựng và trưởng thành, Công ty TNHH MTV Apatit Việt Nam tự hào là đơn vị hàng đầu trong lĩnh vực khai thác khoáng hóa chất và khoáng phân bón.
             </p>
             <div className="flex gap-4 pt-2">
-              <a href="#" className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-primary hover:text-white transition-colors">
+              <a
+                href="https://www.facebook.com/p/Vinaapacocom-Apatit-Vi%E1%BB%87t-Nam-100080301760656/"
+                target="_blank"
+                rel="noreferrer"
+                className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-primary hover:text-white transition-colors"
+              >
                 <Facebook className="w-4 h-4" />
               </a>
               <a href="#" className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-primary hover:text-white transition-colors">
@@ -69,9 +74,11 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <a href="/#services" className="hover:text-primary transition-colors flex items-center gap-2 before:content-['›'] before:text-primary">
-                  Lĩnh vực hoạt động
-                </a>
+                <Link href="/giai-phap">
+                  <a className="hover:text-primary transition-colors flex items-center gap-2 before:content-['›'] before:text-primary">
+                    Giải pháp & Lĩnh vực
+                  </a>
+                </Link>
               </li>
               <li>
                 <Link href="/san-pham">

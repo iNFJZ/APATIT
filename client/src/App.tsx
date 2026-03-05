@@ -8,6 +8,8 @@ import BackToTopButton from "@/components/common/BackToTopButton";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
 import AboutPage from "@/pages/AboutPage";
+import SolutionsPage from "@/pages/SolutionsPage";
+import SolutionDetailPage from "@/pages/SolutionDetailPage";
 import ProductsPage from "@/pages/ProductsPage";
 import ProductDetailPage from "@/pages/ProductDetailPage";
 import NewsPage from "@/pages/NewsPage";
@@ -24,6 +26,8 @@ function Router() {
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/gioi-thieu" component={AboutPage} />
+      <Route path="/giai-phap" component={SolutionsPage} />
+      <Route path="/giai-phap/:slug" component={SolutionDetailPage} />
       <Route path="/san-pham/:slug" component={ProductDetailPage} />
       <Route path="/san-pham" component={ProductsPage} />
       <Route path="/tin-tuc/:slug" component={NewsDetailPage} />

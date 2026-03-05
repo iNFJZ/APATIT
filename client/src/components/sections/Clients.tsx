@@ -1,28 +1,25 @@
-import { Building2, Factory, Landmark } from "lucide-react";
 import React from "react";
+import agribankLogo from "@/assets/partners/agribank.png";
+import laocaiLogo from "@/assets/partners/laocai.png";
+import ipecoLogo from "@/assets/partners/ipeco.png";
+import infoCenterLogo from "@/assets/partners/info-center.png";
+import phanBonMienNamLogo from "@/assets/partners/phan-bon-mien-nam.png";
+import vinachemLogo from "@/assets/partners/vinachem.png";
+import dapVinachemLogo from "@/assets/partners/dap-vinachem.png";
 
-type ClientItem = {
-  icon: React.ReactElement;
+type ClientLogo = {
   name: string;
-  description: string;
+  src: string;
 };
 
-const clientItems: ClientItem[] = [
-  {
-    icon: <Building2 className="w-8 h-8" />,
-    name: "Nhà máy sản xuất phân bón",
-    description: "Các doanh nghiệp sản xuất phân bón NPK và phân lân trong nước sử dụng nguồn quặng Apatit ổn định.",
-  },
-  {
-    icon: <Factory className="w-8 h-8" />,
-    name: "Doanh nghiệp hóa chất & vật liệu",
-    description: "Đối tác trong chuỗi giá trị hóa chất, vật liệu phục vụ nông nghiệp và công nghiệp.",
-  },
-  {
-    icon: <Landmark className="w-8 h-8" />,
-    name: "Đơn vị hạ tầng & dịch vụ công",
-    description: "Các dự án xây dựng hạ tầng, công trình công ích, dịch vụ logistics và vận tải chuyên dụng.",
-  },
+const clientLogos: ClientLogo[] = [
+  { name: "Agribank", src: agribankLogo },
+  { name: "Lào Cai", src: laocaiLogo },
+  { name: "IPECO", src: ipecoLogo },
+  { name: "Trung tâm Thông tin KHKT Hóa chất", src: infoCenterLogo },
+  { name: "Phân bón Miền Nam", src: phanBonMienNamLogo },
+  { name: "Vinachem", src: vinachemLogo },
+  { name: "DAP Vinachem", src: dapVinachemLogo },
 ];
 
 export default function ClientsSection() {
@@ -44,19 +41,21 @@ export default function ClientsSection() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {clientItems.map((item) => (
-            <div
-              key={item.name}
-              className="rounded-2xl border border-slate-100 bg-white p-6 md:p-7 shadow-sm flex flex-col gap-4 hover:shadow-lg transition-shadow duration-300"
-            >
-              <div className="w-14 h-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mb-1">
-                {item.icon}
+        <div className="logo-marquee border border-slate-100 rounded-2xl bg-white py-8 px-4">
+          <div className="logo-marquee-track gap-6 md:gap-10">
+            {[...clientLogos, ...clientLogos].map((item, index) => (
+              <div
+                key={`${item.name}-${index}`}
+                className="flex items-center justify-center px-10 py-4 rounded-full bg-slate-50 border border-slate-100 shadow-sm"
+              >
+                <img
+                  src={item.src}
+                  alt={item.name}
+                  className="h-14 md:h-16 w-auto object-contain"
+                />
               </div>
-              <h3 className="text-lg font-heading font-semibold text-secondary mb-1">{item.name}</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">{item.description}</p>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     </section>
