@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Link, useRoute } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { getQueryFn } from "@/lib/queryClient";
+import { PostContent } from "@/components/PostContent";
 
 type AnnouncementPostDetail = {
   id: string;
@@ -138,8 +139,8 @@ export default function AnnouncementDetailPage() {
               <div className="rounded-2xl overflow-hidden shadow-xl border border-slate-100 bg-white mb-8">
                 <img src={item.imageUrl ?? ""} alt={item.title} className="w-full h-full object-cover" />
               </div>
-              <article className="prose prose-slate max-w-none">
-                <p className="whitespace-pre-line text-muted-foreground leading-relaxed">{item.content}</p>
+              <article>
+                <PostContent content={item.content} />
               </article>
             </div>
           </div>

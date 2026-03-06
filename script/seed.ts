@@ -1,5 +1,6 @@
 import "dotenv/config";
 import bcrypt from "bcryptjs";
+import { inArray } from "drizzle-orm";
 import { db } from "../server/db";
 import { posts, products, users } from "../shared/schema";
 
@@ -111,48 +112,66 @@ async function upsertProducts(seed: SeedProduct[]): Promise<void> {
   }
 }
 
+const OLD_NEWS_SLUGS_REMOVED_ON_SEED = [
+  "dong-chi-phung-quang-hiep-gap-mat-dau-xuan",
+  "gap-mat-dau-xuan-binh-ngo-2026",
+  "tang-cuong-phoi-hop-dam-bao-an-ninh-trat-tu",
+];
+
 async function executeSeed(): Promise<void> {
   await upsertAdminUser({ username: "admin", password: "admin" });
 
+  await db.delete(posts).where(inArray(posts.slug, OLD_NEWS_SLUGS_REMOVED_ON_SEED));
+
   const seedPosts: SeedPost[] = [
     {
-      slug: "dong-chi-phung-quang-hiep-gap-mat-dau-xuan",
+      slug: "dong-chi-phung-quang-hiep-gap-mat-dau-xuan-chuc-tet-cbcnv-cong-ty-tnhh-mtv-apatit-viet-nam",
       title: "Đồng chí Phùng Quang Hiệp gặp mặt đầu xuân, chúc Tết CBCNV Công ty TNHH MTV Apatit Việt Nam",
       summary:
-        "Buổi gặp mặt đầu xuân nhằm động viên tinh thần người lao động, triển khai nhiệm vụ trọng tâm và gửi lời chúc mừng năm mới tới toàn thể CBCNV.",
+        "Sáng ngày 24/02/2026, đồng chí Phùng Quang Hiệp – Ủy viên BCH Đảng bộ Chính phủ, Bí thư Đảng ủy, Chủ tịch Hội đồng thành viên Tập đoàn Hóa chất Việt Nam đã tới thăm, gặp mặt đầu Xuân và chúc mừng năm mới tập thể lãnh đạo, cán bộ, công nhân viên, người lao động Công ty TNHH MTV Apatit Việt Nam.",
       content:
-        "Công ty TNHH MTV Apatit Việt Nam tổ chức gặp mặt đầu xuân nhằm tổng kết hoạt động, tri ân người lao động và triển khai những nhiệm vụ trọng tâm trong năm.\n\n" +
-        "Ban lãnh đạo công ty gửi lời chúc mừng năm mới, kêu gọi thi đua lao động sản xuất, giữ vững an toàn và hiệu quả trong khai thác, chế biến và tiêu thụ sản phẩm.",
+        '<p>Sáng ngày 24/02/2026, đồng chí Phùng Quang Hiệp – Ủy viên BCH Đảng bộ Chính phủ, Bí thư Đảng ủy, Chủ tịch Hội đồng thành viên Tập đoàn Hóa chất Việt Nam đã tới thăm, gặp mặt đầu Xuân và chúc mừng năm mới tập thể lãnh đạo, cán bộ, công nhân viên, người lao động Công ty TNHH MTV Apatit Việt Nam.</p>' +
+        '<figure><img src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&amp;fit=crop&amp;w=1600&amp;q=80" alt="Đồng chí Phùng Quang Hiệp gặp mặt đầu xuân, chúc Tết CBCNV Công ty TNHH MTV Apatit Việt Nam" /></figure>' +
+        '<p>Trong không khí của những ngày đầu Xuân, đồng chí Bí thư Đảng ủy, Chủ tịch HĐTV Tập đoàn đã gửi tới tập thể Công ty lời chúc mừng năm mới sức khỏe, hạnh phúc, an khang, thịnh vượng; đồng thời biểu dương và ghi nhận những nỗ lực, cố gắng của đơn vị trong năm 2025, đặc biệt là việc duy trì ổn định sản xuất, đảm bảo việc làm, thu nhập cho người lao động, đóng góp tích cực vào kết quả chung của Tập đoàn.</p>' +
+        '<p>Đồng chí Phùng Quang Hiệp nhấn mạnh, năm 2026 là năm có ý nghĩa quan trọng, mở đầu cho việc triển khai các nhiệm vụ theo Nghị quyết Đại hội Đảng các cấp, do đó Công ty cần tiếp tục phát huy truyền thống đoàn kết, chủ động đổi mới, nâng cao năng lực quản trị, đẩy mạnh ứng dụng khoa học công nghệ, tăng cường chuyển đổi số, chuyển đổi xanh trong sản xuất; chú trọng công tác an toàn, môi trường và chăm lo đời sống người lao động. Lãnh đạo Tập đoàn tin tưởng Công ty sẽ tiếp tục giữ vững vai trò là đơn vị khai thác, chế biến apatit chủ lực, góp phần bảo đảm nguồn nguyên liệu cho sản xuất phân bón, hóa chất trong nước.</p>' +
+        '<p>Thay mặt tập thể lãnh đạo, cán bộ, người lao động, lãnh đạo Công ty TNHH Apatit Việt Nam bày tỏ vui mừng, xúc động khi được lãnh đạo Tập đoàn tới thăm, chúc Tết ngay những ngày đầu năm mới; đồng thời cam kết sẽ nỗ lực hoàn thành tốt nhiệm vụ sản xuất kinh doanh năm 2026, đóng góp vào sự phát triển bền vững của Tập đoàn Hóa chất Việt Nam.</p>' +
+        '<p>Chương trình gặp mặt đầu Xuân diễn ra trong không khí ấm áp, thân tình, thể hiện sự quan tâm, gắn bó của lãnh đạo Tập đoàn đối với các đơn vị thành viên, tạo động lực để cán bộ, người lao động bước vào năm mới với quyết tâm cao, khí thế mới, hoàn thành thắng lợi các mục tiêu, nhiệm vụ đã đề ra.</p>',
       imageUrl: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1600&q=80",
       type: "NEWS",
       publishedAt: createDateFromLocalDay(24, 2, 2026),
       isPublished: true,
     },
     {
-      slug: "gap-mat-dau-xuan-binh-ngo-2026",
+      slug: "cong-ty-apatit-viet-nam-gap-mat-dau-xuan-binh-ngo-2026",
       title: "Công ty Apatit Việt Nam: Gặp mặt đầu xuân Bính Ngọ 2026",
       summary:
-        "Hoạt động đầu xuân tạo không khí phấn khởi, thống nhất mục tiêu và kế hoạch công tác năm 2026.",
+        "Sáng ngày 23/02/2026 (mùng 7 Tết), trong không khí vui tươi, phấn khởi, mừng Đảng, mừng xuân, mừng đất nước đổi mới của những ngày đầu năm mới. Công ty Apatit Việt Nam đã tổ chức buổi gặp mặt đầu xuân Bính Ngọ 2026.",
       content:
-        "Chương trình gặp mặt đầu xuân được tổ chức trong không khí ấm áp, đoàn kết, nhằm tạo động lực cho tập thể người lao động.\n\n" +
-        "Công ty thống nhất mục tiêu, kế hoạch và ưu tiên hành động để đảm bảo sản xuất kinh doanh ổn định trong năm 2026.",
+        "Sáng ngày 23/02/2026 (mùng 7 Tết), trong không khí vui tươi, phấn khởi, mừng Đảng, mừng xuân, mừng đất nước đổi mới của những ngày đầu năm mới. Công ty Apatit Việt Nam đã tổ chức buổi gặp mặt đầu xuân Bính Ngọ 2026.\n\n" +
+        "Tham dự chương trình có đồng chí Nguyễn Văn Đông – Bí thư Đảng ủy, Tổng giám đốc Công ty; đồng chí Nguyễn Thanh Hà – Chủ Tịch Hội đồng thành viên Công ty; cùng các đồng chí trong Ban Thường vụ Đảng ủy, Hội đồng thành viên; Ban Tổng giám đốc Công ty và toàn thể CBCNV làm việc tại trụ sở Công ty.\n\n" +
+        "Đây là hoạt động thường niên của Công ty nhằm động viên tinh thần, tăng cường sự đoàn kết, tạo khí thế thi đua sôi nổi ngay từ những ngày đầu năm mới.\n\n" +
+        "Phát biểu tại buổi gặp mặt, đồng chí Nguyễn Văn Đông gửi lời chúc mừng tốt đẹp nhất nhân dịp năm mới tới toàn thể CBCNV, người lao động Công ty; ghi nhận và biểu dương những kết quả đã đạt được trong năm 2025, đồng thời nhấn mạnh những mục tiêu, nhiệm vụ cần tập trung, nỗ lực hơn nữa, đoàn kết, sáng tạo và triển khai thực hiện đồng bộ các giải pháp nhằm tháo gỡ những khó khăn, đảm bảo duy trì hoạt động sản xuất kinh doanh ổn định, hoàn thành tốt các mục tiêu, nhiệm vụ năm 2026 theo Nghị quyết Đại hội Đảng bộ Công ty đề ra và Tập đoàn Hóa chất Việt Nam giao.\n\n" +
+        "Sau chương trình gặp mặt tại trụ sở Công ty, lãnh đạo Công ty đã tổ chức đi thăm hỏi, chúc Tết tới các chi nhánh, đơn vị đồng thời động viên tinh thần CBCNV người lao động trong toàn Công ty, lan tỏa sự đồng lòng từ ban lãnh đạo Công ty đến người lao động trong việc thực hiện thắng lợi các chỉ tiêu sản xuất kinh doanh ngay từ những tháng đầu năm, quyết tâm hành động phấn đấu đưa Công ty hoàn thành kế hoạch sản xuất năm 2026 Tập đoàn Hóa chất Việt Nam giao, góp phần vào sự lớn mạnh của ngành hóa chất và kinh tế địa phương.",
       imageUrl: "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1600&q=80",
       type: "NEWS",
-      publishedAt: createDateFromLocalDay(24, 2, 2026),
+      publishedAt: createDateFromLocalDay(23, 2, 2026),
       isPublished: true,
     },
     {
-      slug: "tang-cuong-phoi-hop-dam-bao-an-ninh-trat-tu",
+      slug: "cong-ty-apatit-viet-nam-tang-cuong-phoi-hop-bao-dam-an-ninh-trat-tu-an-toan-trong-hoat-dong-san-xuat-kinh-doanh",
       title:
         "Công ty Apatit Việt Nam tăng cường phối hợp bảo đảm an ninh, trật tự, an toàn trong hoạt động sản xuất kinh doanh",
       summary:
-        "Ký kết và triển khai cơ chế phối hợp nhằm đảm bảo an ninh trật tự, an toàn sản xuất, kiểm soát khu vực và phương tiện ra vào.",
+        "Ngày 5/01/2026, tại Trụ sở Công ty TNHH MTV Apatit Việt Nam đã diễn ra Lễ ký kết Quy chế phối hợp về đảm bảo An ninh trật tự, an toàn xã hội, phòng chống khủng bố, công tác PCCC&CNCH giữa Công ty Apatit Việt Nam và Công an phường Cam Đường.",
       content:
-        "Công ty tăng cường phối hợp với các đơn vị liên quan nhằm đảm bảo an ninh trật tự và an toàn sản xuất.\n\n" +
-        "Chương trình tập trung vào quản lý khu vực khai thác, kiểm soát phương tiện ra vào, nâng cao nhận thức an toàn lao động và đảm bảo ổn định sản xuất.",
+        "Ngày 5/01/2026, tại Trụ sở Công ty TNHH MTV Apatit Việt Nam đã diễn ra Lễ ký kết Quy chế phối hợp về đảm bảo An ninh trật tự, an toàn xã hội, phòng chống khủng bố, công tác PCCC&CNCH giữa Công ty Apatit Việt Nam và Công an phường Cam Đường. Tham dự buổi ký kết có các đồng chí: Nguyễn Thuần Hưng – Phó Bí thư Đảng ủy phường Cam Đường; Nguyễn Thu Hoài – Phó Chủ tịch UBND phường Cam Đường; Thượng tá Nguyễn Thanh Phúc – Trưởng Công an phường Cam Đường cùng lãnh đạo, cán bộ chiến sĩ Công an phường Cam Đường; đồng chí Nguyễn Văn Đông – Bí thư Đảng ủy, Tổng Giám đốc Công ty TNHH MTV Apatit Việt Nam, cùng lãnh đạo các phòng ban, đơn vị, chi nhánh trong toàn Công ty.\n\n" +
+        "Xác định năm 2026 là năm hành động đột phá, lấy hiệu quả thực tế trong hoạt động sản xuất kinh doanh làm thước đo, Công ty TNHH MTV Apatit Việt Nam tiếp tục chú trọng công tác bảo đảm an ninh, trật tự, an toàn trong toàn bộ chuỗi hoạt động sản xuất. Việc ký kết Quy chế phối hợp với Công an phường Cam Đường thể hiện quyết tâm của Công ty trong việc chủ động phòng ngừa, kiểm soát rủi ro, đồng thời thực hiện nghiêm các chủ trương, chính sách, pháp luật của Nhà nước và địa phương nơi doanh nghiệp đứng chân.\n\n" +
+        "Là doanh nghiệp kinh tế trọng điểm của tỉnh Lào Cai, với hơn 1.800 cán bộ, công nhân viên, địa bàn hoạt động trải dài, Công ty Apatit Việt Nam luôn xác định công tác giữ vững an ninh, trật tự, an toàn sản xuất là nhiệm vụ trọng tâm, xuyên suốt, có ý nghĩa quyết định đến sự ổn định sản xuất và bảo đảm an ninh, trật tự trên địa bàn. Ban Tổng Giám đốc Công ty quán triệt tinh thần không chủ quan, không lơ là, không đánh đổi an toàn lấy tiến độ sản xuất.\n\n" +
+        "Phường Cam Đường là địa bàn trọng điểm về an ninh, trật tự của tỉnh, có diện tích rộng, dân số đông, tập trung nhiều khu khai thác khoáng sản và hoạt động sản xuất công nghiệp. Đặc điểm này đặt ra yêu cầu cao đối với công tác bảo đảm an ninh kinh tế, an ninh công nhân, an ninh nội bộ và trật tự an toàn xã hội, đòi hỏi sự phối hợp chặt chẽ, thường xuyên, hiệu quả giữa lực lượng Công an và doanh nghiệp. Thực tiễn cho thấy, trên địa bàn vẫn tiềm ẩn nguy cơ phát sinh các vấn đề phức tạp về an ninh công nhân, an ninh nội bộ, tai nạn lao động, cháy nổ và vi phạm pháp luật. Trước yêu cầu nhiệm vụ trong tình hình mới, lãnh đạo Công an phường Cam Đường đề nghị hai bên thực hiện nghiêm túc Quy chế phối hợp đã ký kết; chủ động nắm chắc tình hình từ sớm, từ xa; kiên quyết không để hình thành \"điểm nóng\", không để các vụ việc nhỏ kéo dài, phức tạp.\n\n" +
+        "Trọng tâm trong thời gian tới là tăng cường phòng ngừa, đấu tranh, xử lý các hành vi vi phạm pháp luật; siết chặt kỷ cương, kỷ luật trong chấp hành các quy định về phòng cháy, chữa cháy, an toàn lao động; bảo đảm an toàn cho người lao động và tài sản của doanh nghiệp. Tiếp thu ý kiến chỉ đạo của lãnh đạo Đảng ủy phường Cam Đường và Công an phường Cam Đường, đồng chí Nguyễn Văn Đông – Bí thư Đảng ủy, Tổng Giám đốc Công ty bày tỏ lời cảm ơn sâu sắc tới các cấp, các ngành và lực lượng chức năng đã luôn quan tâm, đồng hành cùng doanh nghiệp. Với tinh thần chủ động – trách nhiệm – quyết liệt – hiệu quả, lãnh đạo Công ty Apatit Việt Nam cam kết tiếp tục triển khai đồng bộ các giải pháp, thực hiện nghiêm Quy chế phối hợp, góp phần giữ vững ổn định an ninh, trật tự; bảo đảm an toàn sản xuất; bảo vệ môi trường, phục vụ phát triển kinh tế – xã hội của địa phương trong năm 2026 và những năm tiếp theo.",
       imageUrl: "https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?auto=format&fit=crop&w=1600&q=80",
       type: "NEWS",
-      publishedAt: createDateFromLocalDay(6, 1, 2026),
+      publishedAt: createDateFromLocalDay(5, 1, 2026),
       isPublished: true,
     },
     {
