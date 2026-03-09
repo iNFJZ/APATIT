@@ -40,7 +40,7 @@ export default function Header() {
   ];
 
   const extendedNavLinks = isAuthenticated
-    ? [...navLinks, { name: "Nhân viên", href: "/nhan-vien" }]
+    ? [...navLinks, { name: "Nhân viên", href: "/nhan-vien" }, { name: "Quản trị", href: "/admin" }]
     : navLinks;
 
   const solutionsLinks = useMemo(

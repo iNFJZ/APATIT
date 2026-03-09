@@ -31,7 +31,7 @@ export const posts = pgTable("posts", {
   isPublished: boolean("is_published").notNull().default(false),
 });
 
-export const insertPostSchema = createInsertSchema(posts).pick({
+const basePostSchema = createInsertSchema(posts).pick({
   slug: true,
   title: true,
   summary: true,
@@ -41,7 +41,17 @@ export const insertPostSchema = createInsertSchema(posts).pick({
   publishedAt: true,
 });
 
-export const updatePostSchema = insertPostSchema.partial();
+export const insertPostSchema = basePostSchema.extend({
+  publishedAt: z.union([z.string(), z.date()]).transform((v) => (typeof v === "string" ? new Date(v) : v)),
+});
+
+export const updatePostSchema = basePostSchema.partial().extend({
+  isPublished: z.boolean().optional(),
+  publishedAt: z
+    .union([z.string(), z.date()])
+    .transform((v) => (typeof v === "string" ? new Date(v) : v))
+    .optional(),
+});
 
 export type InsertPost = z.infer<typeof insertPostSchema>;
 export type UpdatePost = z.infer<typeof updatePostSchema>;

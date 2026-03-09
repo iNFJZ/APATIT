@@ -67,6 +67,14 @@ export async function getPostBySlug(slug: string, onlyPublished: boolean): Promi
   return postList[0] ?? null;
 }
 
+export async function getPostById(id: string): Promise<Post | null> {
+  const [post] = await db.query.posts.findMany({
+    where: eq(posts.id, id),
+    limit: 1,
+  });
+  return post ?? null;
+}
+
 export async function createPost(input: CreatePostInput): Promise<Post> {
   const parsed = insertPostSchema.parse(input);
   const isPublishedValue = input.isPublished ?? false;
@@ -82,14 +90,29 @@ export async function createPost(input: CreatePostInput): Promise<Post> {
 
 export async function updatePostById(id: string, input: UpdatePostInput): Promise<Post | null> {
   const parsed = updatePostSchema.parse(input);
-  const [updated] = await db
-    .update(posts)
-    .set({
-      ...parsed,
-      isPublished: input.isPublished ?? undefined,
-    })
-    .where(eq(posts.id, id))
-    .returning();
+  const updates: {
+    slug?: string;
+    title?: string;
+    summary?: string;
+    content?: string;
+    imageUrl?: string | null;
+    type?: (typeof postTypeEnum.enumValues)[number];
+    publishedAt?: Date;
+    isPublished?: boolean;
+  } = {};
+  if (parsed.slug !== undefined) updates.slug = parsed.slug;
+  if (parsed.title !== undefined) updates.title = parsed.title;
+  if (parsed.summary !== undefined) updates.summary = parsed.summary;
+  if (parsed.content !== undefined) updates.content = parsed.content;
+  if (parsed.imageUrl !== undefined) updates.imageUrl = parsed.imageUrl;
+  if (parsed.type !== undefined) updates.type = parsed.type;
+  if (parsed.publishedAt !== undefined) updates.publishedAt = parsed.publishedAt;
+  if (parsed.isPublished !== undefined) updates.isPublished = parsed.isPublished;
+  if (Object.keys(updates).length === 0) {
+    const [existing] = await db.query.posts.findMany({ where: eq(posts.id, id), limit: 1 });
+    return existing ?? null;
+  }
+  const [updated] = await db.update(posts).set(updates).where(eq(posts.id, id)).returning();
   return updated ?? null;
 }
 

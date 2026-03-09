@@ -1,7 +1,8 @@
 import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { Toaster } from "@/components/ui/toaster";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import ScrollToTop from "@/components/common/ScrollToTop";
 import BackToTopButton from "@/components/common/BackToTopButton";
@@ -20,10 +21,18 @@ import ContactPage from "@/pages/ContactPage";
 import LoginPage from "@/pages/LoginPage";
 import EmployeesPage from "@/pages/EmployeesPage";
 import EmployeeDetailPage from "@/pages/EmployeeDetailPage";
+import AdminRedirectPage from "@/pages/AdminRedirectPage";
+import AdminPostsPage from "@/pages/AdminPostsPage";
+import AdminPostFormPage from "@/pages/AdminPostFormPage";
 
 function Router() {
   return (
     <Switch>
+      <Route path="/admin/posts/moi" component={AdminPostFormPage} />
+      <Route path="/admin/posts/edit/:slug" component={AdminPostFormPage} />
+      <Route path="/admin/posts/:id" component={AdminPostFormPage} />
+      <Route path="/admin/posts" component={AdminPostsPage} />
+      <Route path="/admin" component={AdminRedirectPage} />
       <Route path="/" component={Home} />
       <Route path="/gioi-thieu" component={AboutPage} />
       <Route path="/giai-phap" component={SolutionsPage} />
@@ -49,7 +58,18 @@ function App() {
       <TooltipProvider>
         <ScrollToTop />
         <BackToTopButton />
-        <Toaster />
+        <ToastContainer
+          position="top-right"
+          autoClose={4000}
+          hideProgressBar={false}
+          newestOnTop
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+        />
         <Router />
       </TooltipProvider>
     </QueryClientProvider>
