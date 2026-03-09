@@ -25,6 +25,9 @@ app.use(
 
 app.use(express.urlencoded({ extended: false }));
 
+// Required when app is behind a proxy (e.g. Vite dev proxy, nginx) so session/cookie work correctly
+app.set("trust proxy", 1);
+
 const MemoryStore = createMemoryStore(session);
 const sessionSecret = process.env.SESSION_SECRET ?? "dev-session-secret";
 // Production: consider connect-pg-simple for persistent session store (sessions survive restarts).
@@ -38,13 +41,18 @@ if (process.env.NODE_ENV === "production") {
   }
 }
 
+// Cookie Secure: only true when served over HTTPS (deploy). Set SECURE_COOKIE=true in production HTTPS.
+// When running npm start locally (http://localhost), leave unset so login/session work over HTTP.
+const cookieSecure = process.env.SECURE_COOKIE === "true";
+
 app.use(
   session({
     cookie: {
       httpOnly: true,
       sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
+      secure: cookieSecure,
       maxAge: 1000 * 60 * 60 * 24 * 7,
+      path: "/",
     },
     name: "vinaapaco.sid",
     resave: false,
@@ -53,6 +61,7 @@ app.use(
     store: new MemoryStore({
       checkPeriod: 1000 * 60 * 60,
     }),
+    proxy: true,
   }),
 );
 

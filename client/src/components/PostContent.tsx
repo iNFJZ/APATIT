@@ -24,15 +24,17 @@ const ALLOWED_ATTR = ["href", "target", "rel", "src", "alt", "title", "class"];
 
 function looksLikeHtml(text: string): boolean {
   const trimmed = text.trim();
-  return (
-    trimmed.startsWith("<") &&
-    (trimmed.startsWith("<p>") ||
-      trimmed.startsWith("<div") ||
-      trimmed.startsWith("<figure") ||
-      trimmed.startsWith("<img") ||
-      trimmed.startsWith("<h2") ||
-      trimmed.startsWith("<h3") ||
-      /<[a-z][a-z0-9]*\b/i.test(trimmed))
+  if (!trimmed) {
+    return false;
+  }
+  const hasHtmlTag = /<\s*[a-z][a-z0-9-]*\b[^>]*>/i.test(trimmed);
+  if (!hasHtmlTag) {
+    return false;
+  }
+  // Only treat as HTML when we detect tags we explicitly support.
+  // This avoids converting random "<3" or similar text into HTML mode.
+  return /<\s*(p|div|span|figure|figcaption|img|h2|h3|ul|ol|li|br|strong|em|b|i|u|a)\b/i.test(
+    trimmed,
   );
 }
 

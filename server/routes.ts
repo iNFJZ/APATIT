@@ -1,4 +1,5 @@
 import type { Express } from "express";
+import rateLimit from "express-rate-limit";
 import { type Server } from "http";
 import { storage } from "./storage";
 import { z } from "zod";
@@ -6,8 +7,10 @@ import bcrypt from "bcryptjs";
 import {
   createPost,
   deletePostById,
+  getPostById,
   getPostBySlug,
   listPosts,
+  type ListPostsQuery,
   updatePostById,
 } from "./posts-repository";
 import {
@@ -15,6 +18,7 @@ import {
   deleteProductById,
   getProductBySlug,
   listProducts,
+  type ListProductsQuery,
   updateProductById,
 } from "./products-repository";
 
@@ -127,6 +131,14 @@ export async function registerRoutes(
     password: z.string().min(1),
   });
 
+  const loginRateLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 10,
+    message: { message: "Too many login attempts. Try again later." },
+    standardHeaders: true,
+    legacyHeaders: false,
+  });
+
   app.get("/api/me", async (req, res) => {
     if (!req.session.userId) {
       return res.json({ isAuthenticated: false as const });
@@ -139,7 +151,7 @@ export async function registerRoutes(
     return res.json({ isAuthenticated: true as const, user: getPublicUser(user) });
   });
 
-  app.post("/api/login", async (req, res) => {
+  app.post("/api/login", loginRateLimiter, async (req, res) => {
     const parsed = loginSchema.safeParse(req.body);
     if (!parsed.success) {
       return res.status(400).json({ message: "Invalid payload" });
@@ -192,14 +204,28 @@ export async function registerRoutes(
   app.get("/api/posts", async (req, res, next) => {
     try {
       const { type, search, limit, offset, onlyPublished } = req.query;
-      const posts = await listPosts({
+      const query = {
         type: typeof type === "string" ? type : undefined,
         search: typeof search === "string" ? search : undefined,
         limit,
         offset,
         onlyPublished: onlyPublished !== "false",
-      } as any);
+      } as unknown as ListPostsQuery;
+      const posts = await listPosts(query);
       return res.json({ posts });
+    } catch (err) {
+      return next(err);
+    }
+  });
+
+  app.get("/api/posts/by-id/:id", async (req, res, next) => {
+    try {
+      assertAuthenticated(req.session.userId);
+      const post = await getPostById(req.params.id);
+      if (!post) {
+        return res.status(404).json({ message: "Post not found" });
+      }
+      return res.json({ post });
     } catch (err) {
       return next(err);
     }
@@ -237,6 +263,10 @@ export async function registerRoutes(
       }
       return res.json({ post: updated });
     } catch (err) {
+      if (err instanceof z.ZodError) {
+        const msg = err.errors.map((e) => `${e.path.join(".")}: ${e.message}`).join("; ");
+        return res.status(400).json({ message: msg || "Dữ liệu không hợp lệ" });
+      }
       return next(err);
     }
   });
@@ -257,12 +287,13 @@ export async function registerRoutes(
   app.get("/api/products", async (req, res, next) => {
     try {
       const { search, limit, offset, onlyPublished } = req.query;
-      const products = await listProducts({
+      const query = {
         search: typeof search === "string" ? search : undefined,
         limit,
         offset,
         onlyPublished: onlyPublished !== "false",
-      } as any);
+      } as unknown as ListProductsQuery;
+      const products = await listProducts(query);
       return res.json({ products });
     } catch (err) {
       return next(err);
