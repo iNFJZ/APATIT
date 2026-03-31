@@ -5,9 +5,15 @@ import { serveStatic } from "./static";
 import { createServer } from "http";
 import session from "express-session";
 import createMemoryStore from "memorystore";
+import fs from "fs";
+import path from "path";
 
 const app = express();
 const httpServer = createServer(app);
+
+const uploadsDir = path.resolve(process.cwd(), "uploads");
+fs.mkdirSync(uploadsDir, { recursive: true });
+app.use("/uploads", express.static(uploadsDir));
 
 declare module "http" {
   interface IncomingMessage {

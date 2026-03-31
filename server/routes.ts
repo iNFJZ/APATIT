@@ -1,6 +1,10 @@
 import type { Express } from "express";
 import rateLimit from "express-rate-limit";
 import { type Server } from "http";
+import multer from "multer";
+import { type FileFilterCallback } from "multer";
+import path from "path";
+import { randomUUID } from "crypto";
 import { storage } from "./storage";
 import { z } from "zod";
 import bcrypt from "bcryptjs";
@@ -21,6 +25,7 @@ import {
   type ListProductsQuery,
   updateProductById,
 } from "./products-repository";
+import { convertDocxBufferToHtml } from "./document-to-html";import { buildImageStorage } from "./image-storage";
 
 declare module "express-session" {
   interface SessionData {
@@ -33,70 +38,6 @@ type PublicUser = {
   username: string;
 };
 
-type Employee = {
-  id: string;
-  code: string;
-  fullName: string;
-  department: string;
-  position: string;
-  occupation: string;
-  location: string;
-  email: string;
-  phone: string;
-  startDate: string;
-  birthDate: string;
-  maritalStatus: string;
-  managerName: string;
-};
-
-const employees: Employee[] = [
-  {
-    id: "e-001",
-    code: "NV001",
-    fullName: "Nguyễn Văn A",
-    department: "Kinh doanh",
-    position: "Chuyên viên",
-    occupation: "Chuyên viên kinh doanh",
-    location: "Trụ sở Lào Cai",
-    email: "nv.a@vinaapaco.com",
-    phone: "0214 000 001",
-    startDate: "2018-03-15",
-    birthDate: "1990-06-10",
-    maritalStatus: "Độc thân",
-    managerName: "Trần Văn Quản lý",
-  },
-  {
-    id: "e-002",
-    code: "NV002",
-    fullName: "Trần Thị B",
-    department: "Kế toán",
-    position: "Chuyên viên",
-    occupation: "Kế toán tổng hợp",
-    location: "Trụ sở Hà Nội",
-    email: "tt.b@vinaapaco.com",
-    phone: "0214 000 002",
-    startDate: "2019-07-01",
-    birthDate: "1992-11-20",
-    maritalStatus: "Đã kết hôn",
-    managerName: "Phạm Thị Kế toán trưởng",
-  },
-  {
-    id: "e-003",
-    code: "NV003",
-    fullName: "Lê Văn C",
-    department: "Nhân sự",
-    position: "Chuyên viên",
-    occupation: "Chuyên viên nhân sự",
-    location: "Trụ sở Lào Cai",
-    email: "lv.c@vinaapaco.com",
-    phone: "0214 000 003",
-    startDate: "2020-01-10",
-    birthDate: "1988-03-05",
-    maritalStatus: "Độc thân",
-    managerName: "Nguyễn Thị Trưởng phòng nhân sự",
-  },
-];
-
 function getPublicUser(user: { id: string; username: string }): PublicUser {
   return { id: user.id, username: user.username };
 }
@@ -107,10 +48,82 @@ function assertAuthenticated(sessionUserId?: string): asserts sessionUserId is s
   }
 }
 
-export async function registerRoutes(
-  httpServer: Server,
-  app: Express
-): Promise<Server> {
+function createSlugFromTitle(title: string): string {
+  const normalized = title
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+  if (normalized) {
+    return normalized;
+  }
+  return `post-${Date.now()}`;
+}
+
+async function createUniqueSlug(baseSlug: string, excludePostId?: string): Promise<string> {
+  let candidate = baseSlug;
+  let suffix = 2;
+  while (true) {
+    const existing = await getPostBySlug(candidate, false);
+    if (!existing || existing.id === excludePostId) {
+      return candidate;
+    }
+    candidate = `${baseSlug}-${suffix}`;
+    suffix += 1;
+  }
+}
+
+function collectAssetUrlsFromHtml(html: string): string[] {
+  const result: string[] = [];
+  const attributeRegex = /(src|href)=["']([^"']+)["']/gi;
+  let match = attributeRegex.exec(html);
+  while (match) {
+    const url = match[2];
+    if (url) {
+      result.push(url.trim());
+    }
+    match = attributeRegex.exec(html);
+  }
+  return result;
+}
+
+function tryExtractKeyFromAssetUrl(assetUrl: string, uploadsPublicBaseUrl: string): string | null {
+  if (!assetUrl) {
+    return null;
+  }
+  if (assetUrl.startsWith(`${uploadsPublicBaseUrl}/`)) {
+    return assetUrl.slice(`${uploadsPublicBaseUrl}/`.length).trim() || null;
+  }
+  const s3BaseUrl = process.env.S3_BASE_URL;
+  if (s3BaseUrl && assetUrl.startsWith(`${s3BaseUrl}/`)) {
+    return assetUrl.slice(`${s3BaseUrl}/`.length).trim() || null;
+  }
+  return null;
+}
+
+function collectManagedAssetKeys(post: { content: string; imageUrl: string | null }): string[] {
+  const uploadsPublicBaseUrl = "/uploads";
+  const candidates = [...collectAssetUrlsFromHtml(post.content)];
+  if (post.imageUrl) {
+    candidates.push(post.imageUrl);
+  }
+  const keys = candidates
+    .map((url) => tryExtractKeyFromAssetUrl(url, uploadsPublicBaseUrl))
+    .filter((key): key is string => Boolean(key && key.startsWith("docx-images/")));
+  return Array.from(new Set(keys));
+}
+
+export async function registerRoutes(httpServer: Server, app: Express): Promise<Server> {
+  const uploadsRootDir = path.resolve(process.cwd(), "uploads");
+  const imageStorage = buildImageStorage({
+    uploadsRootDir,
+    uploadsPublicBaseUrl: "/uploads",
+  });
+  const docxImageSubdir = "docx-images";
   const staffUsername = process.env.STAFF_USERNAME ?? "admin";
   const staffPassword = process.env.STAFF_PASSWORD ?? "admin";
 
@@ -137,6 +150,25 @@ export async function registerRoutes(
     message: { message: "Too many login attempts. Try again later." },
     standardHeaders: true,
     legacyHeaders: false,
+  });
+
+  const maxDocxUploadBytes = 50 * 1024 * 1024;
+  const uploadDocx = multer({
+    storage: multer.memoryStorage(),
+    limits: { fileSize: maxDocxUploadBytes },
+    fileFilter: (
+      _req: Express.Request,
+      file: Express.Multer.File,
+      cb: FileFilterCallback,
+    ) => {
+      const ext = path.extname(file.originalname).toLowerCase();
+      const allowedExtensions = new Set([".doc", ".docx"]);
+      if (!allowedExtensions.has(ext)) {
+        cb(null, false);
+        return;
+      }
+      cb(null, true);
+    },
   });
 
   app.get("/api/me", async (req, res) => {
@@ -177,28 +209,6 @@ export async function registerRoutes(
       res.clearCookie("vinaapaco.sid");
       return res.json({ ok: true });
     });
-  });
-
-  app.get("/api/employees", async (req, res, next) => {
-    try {
-      assertAuthenticated(req.session.userId);
-      return res.json({ employees });
-    } catch (err) {
-      return next(err);
-    }
-  });
-
-  app.get("/api/employees/:id", async (req, res, next) => {
-    try {
-      assertAuthenticated(req.session.userId);
-      const employee = employees.find((item) => item.id === req.params.id);
-      if (!employee) {
-        return res.status(404).json({ message: "Employee not found" });
-      }
-      return res.json({ employee });
-    } catch (err) {
-      return next(err);
-    }
   });
 
   app.get("/api/posts", async (req, res, next) => {
@@ -254,6 +264,59 @@ export async function registerRoutes(
     }
   });
 
+  app.post("/api/posts/from-document", uploadDocx.single("document"), async (req, res, next) => {
+    try {
+      assertAuthenticated(req.session.userId);
+      const file = (req as Express.Request & { file?: Express.Multer.File }).file;
+      if (!file) {
+        return res.status(400).json({ message: "Vui lòng chọn file Word/Docs." });
+      }
+      const fileExt = path.extname(file.originalname).toLowerCase();
+      if (fileExt !== ".docx") {
+        return res.status(400).json({
+          message: "Hiện tại chỉ hỗ trợ chuyển file `.docx`. Vui lòng xuất Word sang `.docx` rồi thử lại.",
+        });
+      }
+      const fromDocumentSchema = z.object({
+        type: z.enum(["NEWS", "ANNOUNCEMENT"]),
+        imageUrl: z.string().trim().optional(),
+        publishedAt: z.string().min(1),
+        isPublished: z.enum(["true", "false"]).transform((value) => value === "true").optional(),
+      });
+      const parsedBody = fromDocumentSchema.parse(req.body);
+      const conversionId = randomUUID();
+      const { html, titleFromFirstLine } = await convertDocxBufferToHtml({
+        docxBuffer: file.buffer,
+        conversionId,
+        uploadImage: ({ buffer, contentType, conversionId: imageConversionId, fileName }) =>
+          imageStorage.uploadImage({
+            buffer,
+            contentType,
+            key: `${docxImageSubdir}/${imageConversionId}/${fileName}`,
+          }),
+      });
+      const generatedTitle = titleFromFirstLine || "Bai viet moi";
+      const generatedSlug = await createUniqueSlug(createSlugFromTitle(generatedTitle));
+      const created = await createPost({
+        slug: generatedSlug,
+        title: generatedTitle,
+        summary: "",
+        content: html,
+        imageUrl: parsedBody.imageUrl?.trim() ? parsedBody.imageUrl.trim() : null,
+        type: parsedBody.type,
+        publishedAt: new Date(parsedBody.publishedAt),
+        isPublished: parsedBody.isPublished ?? false,
+      });
+      return res.status(201).json({ post: created });
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        const msg = err.errors.map((e) => `${e.path.join(".")}: ${e.message}`).join("; ");
+        return res.status(400).json({ message: msg || "Dữ liệu không hợp lệ" });
+      }
+      return next(err);
+    }
+  });
+
   app.patch("/api/posts/:id", async (req, res, next) => {
     try {
       assertAuthenticated(req.session.userId);
@@ -271,12 +334,91 @@ export async function registerRoutes(
     }
   });
 
+  app.patch(
+    "/api/posts/:id/from-document",
+    uploadDocx.single("document"),
+    async (req, res, next) => {
+      try {
+        assertAuthenticated(req.session.userId);
+        const file = (req as Express.Request & { file?: Express.Multer.File }).file;
+        if (!file) {
+          return res.status(400).json({ message: "Vui lòng chọn file Word/Docs." });
+        }
+        const fileExt = path.extname(file.originalname).toLowerCase();
+        if (fileExt !== ".docx") {
+          return res.status(400).json({
+            message: "Hiện tại chỉ hỗ trợ chuyển file `.docx`. Vui lòng xuất Word sang `.docx` rồi thử lại.",
+          });
+        }
+        const fromDocumentSchema = z.object({
+          type: z.enum(["NEWS", "ANNOUNCEMENT"]),
+          imageUrl: z.string().trim().optional(),
+          publishedAt: z.string().min(1),
+          isPublished: z.enum(["true", "false"]).transform((value) => value === "true").optional(),
+        });
+        const parsedBody = fromDocumentSchema.parse(req.body);
+        const conversionId = randomUUID();
+        const { html, titleFromFirstLine } = await convertDocxBufferToHtml({
+          docxBuffer: file.buffer,
+          conversionId,
+          uploadImage: ({ buffer, contentType, conversionId: imageConversionId, fileName }) =>
+            imageStorage.uploadImage({
+              buffer,
+              contentType,
+              key: `${docxImageSubdir}/${imageConversionId}/${fileName}`,
+            }),
+        });
+        const postIdParam = req.params.id;
+        if (Array.isArray(postIdParam)) {
+          return res.status(400).json({ message: "Invalid post id." });
+        }
+        const generatedTitle = titleFromFirstLine || "Bai viet moi";
+        const generatedSlug = await createUniqueSlug(createSlugFromTitle(generatedTitle), postIdParam);
+        const updated = await updatePostById(postIdParam, {
+          slug: generatedSlug,
+          title: generatedTitle,
+          summary: "",
+          content: html,
+          imageUrl: parsedBody.imageUrl?.trim() ? parsedBody.imageUrl.trim() : null,
+          type: parsedBody.type,
+          publishedAt: new Date(parsedBody.publishedAt),
+          isPublished: parsedBody.isPublished ?? false,
+        });
+        if (!updated) {
+          return res.status(404).json({ message: "Post not found" });
+        }
+        return res.json({ post: updated });
+      } catch (err) {
+        if (err instanceof z.ZodError) {
+          const msg = err.errors.map((e) => `${e.path.join(".")}: ${e.message}`).join("; ");
+          return res.status(400).json({ message: msg || "Dữ liệu không hợp lệ" });
+        }
+        return next(err);
+      }
+    },
+  );
+
   app.delete("/api/posts/:id", async (req, res, next) => {
     try {
       assertAuthenticated(req.session.userId);
+      const existingPost = await getPostById(req.params.id);
+      if (!existingPost) {
+        return res.status(404).json({ message: "Post not found" });
+      }
+      const assetKeys = collectManagedAssetKeys({
+        content: existingPost.content,
+        imageUrl: existingPost.imageUrl,
+      });
       const deleted = await deletePostById(req.params.id);
       if (!deleted) {
         return res.status(404).json({ message: "Post not found" });
+      }
+      if (assetKeys.length > 0) {
+        try {
+          await imageStorage.deleteImages(assetKeys);
+        } catch (err) {
+          console.error("Failed to cleanup post assets:", err);
+        }
       }
       return res.json({ ok: true });
     } catch (err) {

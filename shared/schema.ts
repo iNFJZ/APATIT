@@ -42,14 +42,16 @@ const basePostSchema = createInsertSchema(posts).pick({
 });
 
 export const insertPostSchema = basePostSchema.extend({
-  publishedAt: z.union([z.string(), z.date()]).transform((v) => (typeof v === "string" ? new Date(v) : v)),
+  publishedAt: z
+    .union([z.string(), z.date()])
+    .transform((value) => (typeof value === "string" ? new Date(value) : value)),
 });
 
 export const updatePostSchema = basePostSchema.partial().extend({
   isPublished: z.boolean().optional(),
   publishedAt: z
     .union([z.string(), z.date()])
-    .transform((v) => (typeof v === "string" ? new Date(v) : v))
+    .transform((value) => (typeof value === "string" ? new Date(value) : value))
     .optional(),
 });
 

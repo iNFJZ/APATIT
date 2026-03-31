@@ -33,6 +33,7 @@ type PostDetail = PostPayload & {
   id: string;
   isPublished: boolean;
 };
+type PostingMode = "manual" | "upload";
 
 function insertAtCursor(textarea: HTMLTextAreaElement, insertion: string): string {
   const start = textarea.selectionStart;
@@ -61,12 +62,28 @@ export default function AdminPostFormPage() {
   const [summary, setSummary] = useState("");
   const [content, setContent] = useState("");
   const [imageUrl, setImageUrl] = useState("");
+  const [documentFile, setDocumentFile] = useState<File | null>(null);
+  const [documentInputKey, setDocumentInputKey] = useState<number>(0);
+  const [postingMode, setPostingMode] = useState<PostingMode>("manual");
   const [type, setType] = useState<"NEWS" | "ANNOUNCEMENT">("NEWS");
   const [publishedAt, setPublishedAt] = useState("");
   const [isPublished, setIsPublished] = useState(false);
   const [imageDialogOpen, setImageDialogOpen] = useState(false);
   const [imageUrlInput, setImageUrlInput] = useState("");
   const [imageAltInput, setImageAltInput] = useState("");
+
+  function handleDocumentFileChange(event: React.ChangeEvent<HTMLInputElement>): void {
+    const file = event.target.files?.[0] ?? null;
+    setDocumentFile(file);
+    if (file) {
+      setPostingMode("upload");
+    }
+  }
+
+  function handleClearDocumentFile(): void {
+    setDocumentFile(null);
+    setDocumentInputKey((prev) => prev + 1);
+  }
 
   const queryBySlug = useQuery<{ post: PostDetail }>({
     queryKey: ["/api/posts", slugParam, "onlyPublished=false"],
@@ -163,6 +180,57 @@ export default function AdminPostFormPage() {
     },
   });
 
+  const createFromDocumentMutation = useMutation({
+    mutationFn: async (formData: FormData) => {
+      const res = await fetch("/api/posts/from-document", {
+        method: "POST",
+        body: formData,
+        credentials: "include",
+      });
+      if (!res.ok) {
+        const text = await res.text().catch(() => "");
+        throw new Error(text || `${res.status}`);
+      }
+      return (await res.json()) as Promise<{ post: PostDetail }>;
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ["/api/posts?onlyPublished=false"] });
+      toast.success("Đã tạo bài viết từ tài liệu.");
+      setLocation("/admin/posts");
+    },
+    onError: (err: Error) => {
+      toast.error("Không thể tạo bài viết.", err.message);
+    },
+  });
+
+  const updateFromDocumentMutation = useMutation({
+    mutationFn: async (formData: FormData) => {
+      const res = await fetch(`/api/posts/${currentId}/from-document`, {
+        method: "PATCH",
+        body: formData,
+        credentials: "include",
+      });
+      if (!res.ok) {
+        const text = await res.text().catch(() => "");
+        throw new Error(text || `${res.status}`);
+      }
+      return (await res.json()) as Promise<{ post: PostDetail }>;
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ["/api/posts?onlyPublished=false"] });
+      void queryClient.invalidateQueries({ queryKey: ["/api/posts/by-id", currentId] });
+      if (slugParam) {
+        void queryClient.invalidateQueries({
+          queryKey: ["/api/posts", slugParam, "onlyPublished=false"],
+        });
+      }
+      toast.success("Đã cập nhật bài viết từ tài liệu.");
+    },
+    onError: (err: Error) => {
+      toast.error("Không thể cập nhật bài viết.", err.message);
+    },
+  });
+
   function handleSyncSlugFromTitle(): void {
     if (title.trim()) {
       setSlug(slugify(title));
@@ -190,17 +258,52 @@ export default function AdminPostFormPage() {
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>): void {
     event.preventDefault();
+    const trimmedImageUrl = imageUrl.trim() || null;
+    const publishedAtValue = publishedAt ? `${publishedAt}T00:00:00.000Z` : new Date().toISOString();
+    const isUsingDocumentUpload = postingMode === "upload";
+    if (isUsingDocumentUpload) {
+      if (!documentFile) {
+        toast.error("Vui lòng chọn file Word/Docs.");
+        return;
+      }
+      const formData = new FormData();
+      formData.append("type", type);
+      formData.append("publishedAt", publishedAtValue);
+      formData.append("isPublished", String(isPublished));
+      if (trimmedImageUrl) {
+        formData.append("imageUrl", trimmedImageUrl);
+      }
+      formData.append("document", documentFile);
+      if (isEdit) {
+        if (!currentId) {
+          toast.error("Đang tải bài viết, vui lòng đợi.");
+          return;
+        }
+        updateFromDocumentMutation.mutate(formData);
+      } else {
+        createFromDocumentMutation.mutate(formData);
+      }
+      return;
+    }
+    const trimmedSlug = slug.trim();
+    const trimmedTitle = title.trim();
+    const trimmedSummary = summary.trim();
+    if (!trimmedSlug || !trimmedTitle) {
+      toast.error("Vui lòng điền đủ tiêu đề và slug.");
+      return;
+    }
+
     const payload: PostPayload = {
-      slug: slug.trim(),
-      title: title.trim(),
-      summary: summary.trim(),
+      slug: trimmedSlug,
+      title: trimmedTitle,
+      summary: trimmedSummary,
       content: content.trim(),
-      imageUrl: imageUrl.trim() || null,
+      imageUrl: trimmedImageUrl,
       type,
-      publishedAt: publishedAt ? `${publishedAt}T00:00:00.000Z` : new Date().toISOString(),
+      publishedAt: publishedAtValue,
       isPublished,
     };
-    if (!payload.slug || !payload.title || !payload.summary || !payload.content) {
+    if (!payload.content) {
       toast.error("Vui lòng điền đủ tiêu đề, slug, tóm tắt và nội dung.");
       return;
     }
@@ -215,7 +318,11 @@ export default function AdminPostFormPage() {
     }
   }
 
-  const isSubmitting = createMutation.isPending || updateMutation.isPending;
+  const isSubmitting =
+    createMutation.isPending ||
+    updateMutation.isPending ||
+    createFromDocumentMutation.isPending ||
+    updateFromDocumentMutation.isPending;
 
   return (
     <AdminLayout>
@@ -259,6 +366,32 @@ export default function AdminPostFormPage() {
         {(!isEdit || data?.post) && (
           <form onSubmit={handleSubmit} className="space-y-6 rounded-2xl border border-slate-200 bg-white p-6">
             <div className="grid gap-2">
+              <Label>Phương thức đăng bài</Label>
+              <div className="flex flex-wrap gap-4 text-sm">
+                <label className="inline-flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="postingMode"
+                    value="manual"
+                    checked={postingMode === "manual"}
+                    onChange={() => setPostingMode("manual")}
+                  />
+                  Nhập tay (truyền thống)
+                </label>
+                <label className="inline-flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="postingMode"
+                    value="upload"
+                    checked={postingMode === "upload"}
+                    onChange={() => setPostingMode("upload")}
+                  />
+                  Upload file Word/Docs
+                </label>
+              </div>
+            </div>
+
+            <div className="grid gap-2">
               <Label htmlFor="type">Loại bài</Label>
               <select
                 id="type"
@@ -271,51 +404,61 @@ export default function AdminPostFormPage() {
               </select>
             </div>
 
-            <div className="grid gap-2">
-              <Label htmlFor="title">Tiêu đề</Label>
-              <Input
-                id="title"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="Nhập tiêu đề bài viết"
-                className="rounded-lg"
-              />
-            </div>
+            {postingMode === "manual" && (
+              <>
+                <div className="grid gap-2">
+                  <Label htmlFor="title">Tiêu đề</Label>
+                  <Input
+                    id="title"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    placeholder="Nhập tiêu đề bài viết"
+                    className="rounded-lg"
+                  />
+                </div>
 
-            <div className="grid gap-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="slug">Đường dẫn (slug)</Label>
-                <Button type="button" variant="ghost" size="sm" onClick={handleSyncSlugFromTitle}>
-                  Tạo slug từ tiêu đề
-                </Button>
-              </div>
-              <Input
-                id="slug"
-                value={slug}
-                onChange={(e) => setSlug(e.target.value)}
-                placeholder="duong-dan-bai-viet"
-                className="rounded-lg font-mono text-sm"
-              />
-              <p className="text-xs text-muted-foreground">
-                Dùng cho URL: /tin-tuc/{slug || "..."} hoặc /cong-bo-thong-tin/{slug || "..."}
-              </p>
-            </div>
+                <div className="grid gap-2">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="slug">Đường dẫn (slug)</Label>
+                    <Button type="button" variant="ghost" size="sm" onClick={handleSyncSlugFromTitle}>
+                      Tạo slug từ tiêu đề
+                    </Button>
+                  </div>
+                  <Input
+                    id="slug"
+                    value={slug}
+                    onChange={(e) => setSlug(e.target.value)}
+                    placeholder="duong-dan-bai-viet"
+                    className="rounded-lg font-mono text-sm"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Dùng cho URL: /tin-tuc/{slug || "..."} hoặc /cong-bo-thong-tin/{slug || "..."}
+                  </p>
+                </div>
 
-            <div className="grid gap-2">
-              <Label htmlFor="summary">Tóm tắt</Label>
-              <textarea
-                id="summary"
-                value={summary}
-                onChange={(e) => setSummary(e.target.value)}
-                placeholder="Đoạn tóm tắt hiển thị ở danh sách và đầu bài"
-                rows={3}
-                className="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-              />
-            </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="summary">Tóm tắt</Label>
+                  <textarea
+                    id="summary"
+                    value={summary}
+                    onChange={(e) => setSummary(e.target.value)}
+                    placeholder="Đoạn tóm tắt hiển thị ở danh sách và đầu bài"
+                    rows={3}
+                    className="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                  />
+                </div>
+              </>
+            )}
 
-            <div className="grid gap-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="content">Nội dung (HTML)</Label>
+            {postingMode === "manual" && (
+              <div className="grid gap-2">
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2">
+                  <Label htmlFor="content">Nội dung (HTML)</Label>
+                  {documentFile != null && (
+                    <span className="text-xs text-muted-foreground">(Tự tạo từ file)</span>
+                  )}
+                </div>
                 <Button
                   type="button"
                   variant="outline"
@@ -338,6 +481,31 @@ export default function AdminPostFormPage() {
               />
               <p className="text-xs text-muted-foreground">
                 Dùng thẻ &lt;p&gt; cho đoạn văn, nút &quot;Chèn ảnh&quot; sẽ thêm &lt;figure&gt;&lt;img&gt;&lt;/figure&gt;. Có thể dán URL ảnh từ kho lưu trữ (ví dụ fs.vinachem.com.vn).
+              </p>
+            </div>
+            )}
+
+            <div className="grid gap-2">
+              <Label htmlFor="document">Tài liệu Word/Docs (.docx) - Cách 2</Label>
+              <div className="flex items-center gap-3">
+                <Input
+                  key={documentInputKey}
+                  id="document"
+                  type="file"
+                  accept=".doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                  onChange={handleDocumentFileChange}
+                  className="rounded-lg"
+                  disabled={isSubmitting}
+                />
+                {documentFile && (
+                  <Button type="button" variant="outline" className="rounded-full" onClick={handleClearDocumentFile}>
+                    Bỏ chọn
+                  </Button>
+                )}
+              </div>
+              {documentFile && <p className="text-xs text-muted-foreground">{documentFile.name}</p>}
+              <p className="text-xs text-muted-foreground">
+                Ở chế độ upload: hệ thống tự lấy dòng đầu tiên làm tiêu đề, tự sinh slug, tóm tắt để trống.
               </p>
             </div>
 

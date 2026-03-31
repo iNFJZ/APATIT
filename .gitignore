@@ -5,8 +5,9 @@ node_modules
 dist
 client/dist
 server/public
+uploads
 
-# Environment (không commit mật khẩu / secret)
+# Environment
 .env
 .env.local
 .env.*.local
@@ -26,6 +27,6 @@ Thumbs.db
 *.swp
 *.swo
 
-# Tạm / backup
+# Backup
 *.tar.gz
 vite.config.ts.*

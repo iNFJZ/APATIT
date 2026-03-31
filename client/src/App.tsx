@@ -19,8 +19,6 @@ import AnnouncementsPage from "@/pages/AnnouncementsPage";
 import AnnouncementDetailPage from "@/pages/AnnouncementDetailPage";
 import ContactPage from "@/pages/ContactPage";
 import LoginPage from "@/pages/LoginPage";
-import EmployeesPage from "@/pages/EmployeesPage";
-import EmployeeDetailPage from "@/pages/EmployeeDetailPage";
 import AdminRedirectPage from "@/pages/AdminRedirectPage";
 import AdminPostsPage from "@/pages/AdminPostsPage";
 import AdminPostFormPage from "@/pages/AdminPostFormPage";
@@ -45,8 +43,6 @@ function Router() {
       <Route path="/cong-bo-thong-tin" component={AnnouncementsPage} />
       <Route path="/lien-he" component={ContactPage} />
       <Route path="/dang-nhap" component={LoginPage} />
-      <Route path="/nhan-vien/:id" component={EmployeeDetailPage} />
-      <Route path="/nhan-vien" component={EmployeesPage} />
       <Route component={NotFound} />
     </Switch>
   );
